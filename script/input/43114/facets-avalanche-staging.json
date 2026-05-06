@@ -1,0 +1,5 @@
+{
+    "_info": "beacon: PAU beacon (deployer should be the admin of beacon)",
+
+    "beacon": "0x0000000000000000000000000000000000000000"
+}
