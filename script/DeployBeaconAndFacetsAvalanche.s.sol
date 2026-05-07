@@ -11,9 +11,9 @@ import { ERC7540Facet }    from "../lib/diamond-pau/src/facets/erc7540/ERC7540Fa
 import { ICentrifugeFacet } from "../lib/diamond-pau/src/facets/centrifuge/ICentrifugeFacet.sol";
 import { IERC7540Facet }    from "../lib/diamond-pau/src/facets/erc7540/IERC7540Facet.sol";
 
-import { IEnumerableIntegrations } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
+import { IEnumerableIntegrations as IEI } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
 
-import { IForeignControllerFull } from "../lib/diamond-pau/test/interfaces/IForeignControllerFull.sol";
+import { IForeignControllerFull as IControllerFull } from "../lib/diamond-pau/test/interfaces/IForeignControllerFull.sol";
 
 import { Beacon } from "../lib/diamond-pau/src/Beacon.sol";
 
@@ -107,58 +107,22 @@ contract DeployBeaconAndFacetsAvalanche is Script {
     function _deployAndWireCentrifugeFacet() internal returns (address facet) {
         facet = address(new CentrifugeFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](12);
+        IEI.Wire[] memory wires = new IEI.Wire[](12);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.setCentrifugeRecipient.selector,
-            ICentrifugeFacet.setRecipient.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.cancelCentrifugeDepositRequest.selector,
-            ICentrifugeFacet.cancelDepositRequest.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.claimCentrifugeCancelDepositRequest.selector,
-            ICentrifugeFacet.claimCancelDepositRequest.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.cancelCentrifugeRedeemRequest.selector,
-            ICentrifugeFacet.cancelRedeemRequest.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.claimCentrifugeCancelRedeemRequest.selector,
-            ICentrifugeFacet.claimCancelRedeemRequest.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.transferSharesCentrifuge.selector,
-            ICentrifugeFacet.transferShares.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getCentrifugeRecipient.selector,
-            ICentrifugeFacet.getRecipient.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getCentrifugeCancelDepositRateLimitKey.selector,
-            ICentrifugeFacet.getCancelDepositRateLimitKey.selector
-        );
-        wires[8] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getCentrifugeClaimCancelDepositRateLimitKey.selector,
-            ICentrifugeFacet.getClaimCancelDepositRateLimitKey.selector
-        );
-        wires[9] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getCentrifugeCancelRedeemRateLimitKey.selector,
-            ICentrifugeFacet.getCancelRedeemRateLimitKey.selector
-        );
-        wires[10] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getCentrifugeClaimCancelRedeemRateLimitKey.selector,
-            ICentrifugeFacet.getClaimCancelRedeemRateLimitKey.selector
-        );
-        wires[11] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getCentrifugeTransferRateLimitKey.selector,
-            ICentrifugeFacet.getTransferRateLimitKey.selector
-        );
+        wires[0]  = IEI.Wire(IControllerFull.setCentrifugeRecipient.selector,                      ICentrifugeFacet.setRecipient.selector);
+        wires[1]  = IEI.Wire(IControllerFull.cancelCentrifugeDepositRequest.selector,              ICentrifugeFacet.cancelDepositRequest.selector);
+        wires[2]  = IEI.Wire(IControllerFull.claimCentrifugeCancelDepositRequest.selector,         ICentrifugeFacet.claimCancelDepositRequest.selector);
+        wires[3]  = IEI.Wire(IControllerFull.cancelCentrifugeRedeemRequest.selector,               ICentrifugeFacet.cancelRedeemRequest.selector);
+        wires[4]  = IEI.Wire(IControllerFull.claimCentrifugeCancelRedeemRequest.selector,          ICentrifugeFacet.claimCancelRedeemRequest.selector);
+        wires[5]  = IEI.Wire(IControllerFull.transferSharesCentrifuge.selector,                    ICentrifugeFacet.transferShares.selector);
+        wires[6]  = IEI.Wire(IControllerFull.getCentrifugeRecipient.selector,                      ICentrifugeFacet.getRecipient.selector);
+        wires[7]  = IEI.Wire(IControllerFull.getCentrifugeCancelDepositRateLimitKey.selector,      ICentrifugeFacet.getCancelDepositRateLimitKey.selector);
+        wires[8]  = IEI.Wire(IControllerFull.getCentrifugeClaimCancelDepositRateLimitKey.selector, ICentrifugeFacet.getClaimCancelDepositRateLimitKey.selector);
+        wires[9]  = IEI.Wire(IControllerFull.getCentrifugeCancelRedeemRateLimitKey.selector,       ICentrifugeFacet.getCancelRedeemRateLimitKey.selector);
+        wires[10] = IEI.Wire(IControllerFull.getCentrifugeClaimCancelRedeemRateLimitKey.selector,  ICentrifugeFacet.getClaimCancelRedeemRateLimitKey.selector);
+        wires[11] = IEI.Wire(IControllerFull.getCentrifugeTransferRateLimitKey.selector,           ICentrifugeFacet.getTransferRateLimitKey.selector);
 
-        beacon.setIntegration("CENTRIFUGE_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("CENTRIFUGE_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -167,42 +131,18 @@ contract DeployBeaconAndFacetsAvalanche is Script {
     function _deployAndWireERC7540Facet() internal returns (address facet) {
         facet = address(new ERC7540Facet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](8);
+        IEI.Wire[] memory wires = new IEI.Wire[](8);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.requestDepositERC7540.selector,
-            IERC7540Facet.requestDeposit.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.claimDepositERC7540.selector,
-            IERC7540Facet.claimDeposit.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.requestRedeemERC7540.selector,
-            IERC7540Facet.requestRedeem.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.claimRedeemERC7540.selector,
-            IERC7540Facet.claimRedeem.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getERC7540RequestDepositRateLimitKey.selector,
-            IERC7540Facet.getRequestDepositRateLimitKey.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getERC7540ClaimDepositRateLimitKey.selector,
-            IERC7540Facet.getClaimDepositRateLimitKey.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getERC7540RequestRedeemRateLimitKey.selector,
-            IERC7540Facet.getRequestRedeemRateLimitKey.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IForeignControllerFull.getERC7540ClaimRedeemRateLimitKey.selector,
-            IERC7540Facet.getClaimRedeemRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.requestDepositERC7540.selector,                IERC7540Facet.requestDeposit.selector);
+        wires[1] = IEI.Wire(IControllerFull.claimDepositERC7540.selector,                  IERC7540Facet.claimDeposit.selector);
+        wires[2] = IEI.Wire(IControllerFull.requestRedeemERC7540.selector,                 IERC7540Facet.requestRedeem.selector);
+        wires[3] = IEI.Wire(IControllerFull.claimRedeemERC7540.selector,                   IERC7540Facet.claimRedeem.selector);
+        wires[4] = IEI.Wire(IControllerFull.getERC7540RequestDepositRateLimitKey.selector, IERC7540Facet.getRequestDepositRateLimitKey.selector);
+        wires[5] = IEI.Wire(IControllerFull.getERC7540ClaimDepositRateLimitKey.selector,   IERC7540Facet.getClaimDepositRateLimitKey.selector);
+        wires[6] = IEI.Wire(IControllerFull.getERC7540RequestRedeemRateLimitKey.selector,  IERC7540Facet.getRequestRedeemRateLimitKey.selector);
+        wires[7] = IEI.Wire(IControllerFull.getERC7540ClaimRedeemRateLimitKey.selector,    IERC7540Facet.getClaimRedeemRateLimitKey.selector);
 
-        beacon.setIntegration("ERC7540_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("ERC7540_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));

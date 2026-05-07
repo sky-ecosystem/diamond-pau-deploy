@@ -156,7 +156,7 @@ contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
         _assertIntegration("DAIUSDS_FACET",        DAIUSDS_FACET,        2);
         _assertIntegration("ERC4626_FACET",        ERC4626_FACET,        8);
         _assertIntegration("ERC7540_FACET",        ERC7540_FACET,        8);
-        _assertIntegration("USDE_FACET",           ETHENA_FACET,         13);
+        _assertIntegration("ETHENA_FACET",         ETHENA_FACET,         13);
         _assertIntegration("FARM_FACET",           FARM_FACET,           6);
         _assertIntegration("LAYER_ZERO_FACET",     LAYER_ZERO_FACET,     4);
         _assertIntegration("MAPLE_FACET",          MAPLE_FACET,          4);
@@ -197,7 +197,7 @@ contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
         _assertIntegrationSetLog(allLogs[6],  "DAIUSDS_FACET",        DAIUSDS_FACET,        2);
         _assertIntegrationSetLog(allLogs[7],  "ERC4626_FACET",        ERC4626_FACET,        8);
         _assertIntegrationSetLog(allLogs[8],  "ERC7540_FACET",        ERC7540_FACET,        8);
-        _assertIntegrationSetLog(allLogs[9],  "USDE_FACET",           ETHENA_FACET,         13);
+        _assertIntegrationSetLog(allLogs[9],  "ETHENA_FACET",         ETHENA_FACET,         13);
         _assertIntegrationSetLog(allLogs[10], "FARM_FACET",           FARM_FACET,           6);
         _assertIntegrationSetLog(allLogs[11], "LAYER_ZERO_FACET",     LAYER_ZERO_FACET,     4);
         _assertIntegrationSetLog(allLogs[12], "MAPLE_FACET",          MAPLE_FACET,          4);

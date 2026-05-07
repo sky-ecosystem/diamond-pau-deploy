@@ -50,8 +50,8 @@ contract DeployPAU is Script {
         console.log("Controller deployed at: ", address(controller));
 
         AccessControls accessControls = AccessControls(controller.accessControls());
-        ALMProxy almProxy             = ALMProxy(payable(controller.proxy()));
-        RateLimits rateLimits         = RateLimits(controller.rateLimits());
+        ALMProxy       almProxy       = ALMProxy(payable(controller.proxy()));
+        RateLimits     rateLimits     = RateLimits(controller.rateLimits());
 
         // Step 2: Grant roles to relayer and freezer on AccessControls
 

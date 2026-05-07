@@ -60,9 +60,9 @@ import { IWEETHFacet }         from "../lib/diamond-pau/src/facets/weeth/IWEETHF
 import { IWrapProxyETHFacet }  from "../lib/diamond-pau/src/facets/wrap-proxy-eth/IWrapProxyETHFacet.sol";
 import { IWSTETHFacet }        from "../lib/diamond-pau/src/facets/wsteth/IWSTETHFacet.sol";
 
-import { IEnumerableIntegrations } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
+import { IEnumerableIntegrations as IEI } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
 
-import { IMainnetControllerFull } from "../lib/diamond-pau/test/interfaces/IMainnetControllerFull.sol";
+import { IMainnetControllerFull as IControllerFull } from "../lib/diamond-pau/test/interfaces/IMainnetControllerFull.sol";
 
 import { Beacon } from "../lib/diamond-pau/src/Beacon.sol";
 
@@ -238,34 +238,16 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireAaveFacet() internal returns (address facet) {
         facet = address(new AaveFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](6);
+        IEI.Wire[] memory wires = new IEI.Wire[](6);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setAaveMaxSlippage.selector,
-            IAaveFacet.setMaxSlippage.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getAaveMaxSlippage.selector,
-            IAaveFacet.getMaxSlippage.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.depositAave.selector,
-            IAaveFacet.deposit.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.withdrawAave.selector,
-            IAaveFacet.withdraw.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getAaveDepositRateLimitKey.selector,
-            IAaveFacet.getDepositRateLimitKey.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getAaveWithdrawRateLimitKey.selector,
-            IAaveFacet.getWithdrawRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.setAaveMaxSlippage.selector,          IAaveFacet.setMaxSlippage.selector);
+        wires[1] = IEI.Wire(IControllerFull.getAaveMaxSlippage.selector,          IAaveFacet.getMaxSlippage.selector);
+        wires[2] = IEI.Wire(IControllerFull.depositAave.selector,                 IAaveFacet.deposit.selector);
+        wires[3] = IEI.Wire(IControllerFull.withdrawAave.selector,                IAaveFacet.withdraw.selector);
+        wires[4] = IEI.Wire(IControllerFull.getAaveDepositRateLimitKey.selector,  IAaveFacet.getDepositRateLimitKey.selector);
+        wires[5] = IEI.Wire(IControllerFull.getAaveWithdrawRateLimitKey.selector, IAaveFacet.getWithdrawRateLimitKey.selector);
 
-        beacon.setIntegration("AAVE_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("AAVE_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -274,26 +256,14 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireBasinFacet() internal returns (address facet) {
         facet = address(new BasinFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](4);
+        IEI.Wire[] memory wires = new IEI.Wire[](4);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.depositBasin.selector,
-            IBasinFacet.deposit.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.withdrawBasin.selector,
-            IBasinFacet.withdraw.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getBasinDepositRateLimitKey.selector,
-            IBasinFacet.getDepositRateLimitKey.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getBasinWithdrawRateLimitKey.selector,
-            IBasinFacet.getWithdrawRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.depositBasin.selector,                 IBasinFacet.deposit.selector);
+        wires[1] = IEI.Wire(IControllerFull.withdrawBasin.selector,                IBasinFacet.withdraw.selector);
+        wires[2] = IEI.Wire(IControllerFull.getBasinDepositRateLimitKey.selector,  IBasinFacet.getDepositRateLimitKey.selector);
+        wires[3] = IEI.Wire(IControllerFull.getBasinWithdrawRateLimitKey.selector, IBasinFacet.getWithdrawRateLimitKey.selector);
 
-        beacon.setIntegration("BASIN_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("BASIN_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -305,42 +275,18 @@ contract DeployBeaconAndFacetsMainnet is Script {
             usdc_ : Ethereum.USDC
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](8);
+        IEI.Wire[] memory wires = new IEI.Wire[](8);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setCCTPMaxFeeCap.selector,
-            ICCTPFacet.setMaxFeeCap.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setCCTPMintRecipient.selector,
-            ICCTPFacet.setMintRecipient.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.transferUSDCToCCTP.selector,
-            ICCTPFacet.transfer.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.transferUSDCToCCTPWithFee.selector,
-            ICCTPFacet.transferWithFee.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCCTPMaxFeeCap.selector,
-            ICCTPFacet.maxFeeCap.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.toCCTPRateLimitKey.selector,
-            ICCTPFacet.toCCTPRateLimitKey.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCCTPMintRecipient.selector,
-            ICCTPFacet.getMintRecipient.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCCTPToDomainRateLimitKey.selector,
-            ICCTPFacet.getToDomainRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.setCCTPMaxFeeCap.selector,            ICCTPFacet.setMaxFeeCap.selector);
+        wires[1] = IEI.Wire(IControllerFull.setCCTPMintRecipient.selector,        ICCTPFacet.setMintRecipient.selector);
+        wires[2] = IEI.Wire(IControllerFull.transferUSDCToCCTP.selector,          ICCTPFacet.transfer.selector);
+        wires[3] = IEI.Wire(IControllerFull.transferUSDCToCCTPWithFee.selector,   ICCTPFacet.transferWithFee.selector);
+        wires[4] = IEI.Wire(IControllerFull.getCCTPMaxFeeCap.selector,            ICCTPFacet.maxFeeCap.selector);
+        wires[5] = IEI.Wire(IControllerFull.toCCTPRateLimitKey.selector,          ICCTPFacet.toCCTPRateLimitKey.selector);
+        wires[6] = IEI.Wire(IControllerFull.getCCTPMintRecipient.selector,        ICCTPFacet.getMintRecipient.selector);
+        wires[7] = IEI.Wire(IControllerFull.getCCTPToDomainRateLimitKey.selector, ICCTPFacet.getToDomainRateLimitKey.selector);
 
-        beacon.setIntegration("CCTP_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("CCTP_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -349,58 +295,22 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireCentrifugeFacet() internal returns (address facet) {
         facet = address(new CentrifugeFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](12);
+        IEI.Wire[] memory wires = new IEI.Wire[](12);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setCentrifugeRecipient.selector,
-            ICentrifugeFacet.setRecipient.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.cancelCentrifugeDepositRequest.selector,
-            ICentrifugeFacet.cancelDepositRequest.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.claimCentrifugeCancelDepositRequest.selector,
-            ICentrifugeFacet.claimCancelDepositRequest.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.cancelCentrifugeRedeemRequest.selector,
-            ICentrifugeFacet.cancelRedeemRequest.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.claimCentrifugeCancelRedeemRequest.selector,
-            ICentrifugeFacet.claimCancelRedeemRequest.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.transferSharesCentrifuge.selector,
-            ICentrifugeFacet.transferShares.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCentrifugeRecipient.selector,
-            ICentrifugeFacet.getRecipient.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCentrifugeCancelDepositRateLimitKey.selector,
-            ICentrifugeFacet.getCancelDepositRateLimitKey.selector
-        );
-        wires[8] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCentrifugeClaimCancelDepositRateLimitKey.selector,
-            ICentrifugeFacet.getClaimCancelDepositRateLimitKey.selector
-        );
-        wires[9] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCentrifugeCancelRedeemRateLimitKey.selector,
-            ICentrifugeFacet.getCancelRedeemRateLimitKey.selector
-        );
-        wires[10] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCentrifugeClaimCancelRedeemRateLimitKey.selector,
-            ICentrifugeFacet.getClaimCancelRedeemRateLimitKey.selector
-        );
-        wires[11] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCentrifugeTransferRateLimitKey.selector,
-            ICentrifugeFacet.getTransferRateLimitKey.selector
-        );
+        wires[0]  = IEI.Wire(IControllerFull.setCentrifugeRecipient.selector,                      ICentrifugeFacet.setRecipient.selector);
+        wires[1]  = IEI.Wire(IControllerFull.cancelCentrifugeDepositRequest.selector,              ICentrifugeFacet.cancelDepositRequest.selector);
+        wires[2]  = IEI.Wire(IControllerFull.claimCentrifugeCancelDepositRequest.selector,         ICentrifugeFacet.claimCancelDepositRequest.selector);
+        wires[3]  = IEI.Wire(IControllerFull.cancelCentrifugeRedeemRequest.selector,               ICentrifugeFacet.cancelRedeemRequest.selector);
+        wires[4]  = IEI.Wire(IControllerFull.claimCentrifugeCancelRedeemRequest.selector,          ICentrifugeFacet.claimCancelRedeemRequest.selector);
+        wires[5]  = IEI.Wire(IControllerFull.transferSharesCentrifuge.selector,                    ICentrifugeFacet.transferShares.selector);
+        wires[6]  = IEI.Wire(IControllerFull.getCentrifugeRecipient.selector,                      ICentrifugeFacet.getRecipient.selector);
+        wires[7]  = IEI.Wire(IControllerFull.getCentrifugeCancelDepositRateLimitKey.selector,      ICentrifugeFacet.getCancelDepositRateLimitKey.selector);
+        wires[8]  = IEI.Wire(IControllerFull.getCentrifugeClaimCancelDepositRateLimitKey.selector, ICentrifugeFacet.getClaimCancelDepositRateLimitKey.selector);
+        wires[9]  = IEI.Wire(IControllerFull.getCentrifugeCancelRedeemRateLimitKey.selector,       ICentrifugeFacet.getCancelRedeemRateLimitKey.selector);
+        wires[10] = IEI.Wire(IControllerFull.getCentrifugeClaimCancelRedeemRateLimitKey.selector,  ICentrifugeFacet.getClaimCancelRedeemRateLimitKey.selector);
+        wires[11] = IEI.Wire(IControllerFull.getCentrifugeTransferRateLimitKey.selector,           ICentrifugeFacet.getTransferRateLimitKey.selector);
 
-        beacon.setIntegration("CENTRIFUGE_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("CENTRIFUGE_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -409,46 +319,19 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireCurveFacet() internal returns (address facet) {
         facet = address(new CurveFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](9);
+        IEI.Wire[] memory wires = new IEI.Wire[](9);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setCurveMaxSlippage.selector,
-            ICurveFacet.setMaxSlippage.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCurveMaxSlippage.selector,
-            ICurveFacet.getMaxSlippage.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.swapCurve.selector,
-            ICurveFacet.swap.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.addLiquidityCurve.selector,
-            ICurveFacet.addLiquidity.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.removeLiquidityCurve.selector,
-            ICurveFacet.removeLiquidity.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCurveAggregateDepositRateLimitKey.selector,
-            ICurveFacet.getAggregateDepositRateLimitKey.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCurveAssetDepositRateLimitKey.selector,
-            ICurveFacet.getAssetDepositRateLimitKey.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCurveSwapRateLimitKey.selector,
-            ICurveFacet.getSwapRateLimitKey.selector
-        );
-        wires[8] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getCurveWithdrawRateLimitKey.selector,
-            ICurveFacet.getWithdrawRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.setCurveMaxSlippage.selector,                  ICurveFacet.setMaxSlippage.selector);
+        wires[1] = IEI.Wire(IControllerFull.getCurveMaxSlippage.selector,                  ICurveFacet.getMaxSlippage.selector);
+        wires[2] = IEI.Wire(IControllerFull.swapCurve.selector,                            ICurveFacet.swap.selector);
+        wires[3] = IEI.Wire(IControllerFull.addLiquidityCurve.selector,                    ICurveFacet.addLiquidity.selector);
+        wires[4] = IEI.Wire(IControllerFull.removeLiquidityCurve.selector,                 ICurveFacet.removeLiquidity.selector);
+        wires[5] = IEI.Wire(IControllerFull.getCurveAggregateDepositRateLimitKey.selector, ICurveFacet.getAggregateDepositRateLimitKey.selector);
+        wires[6] = IEI.Wire(IControllerFull.getCurveAssetDepositRateLimitKey.selector,     ICurveFacet.getAssetDepositRateLimitKey.selector);
+        wires[7] = IEI.Wire(IControllerFull.getCurveSwapRateLimitKey.selector,             ICurveFacet.getSwapRateLimitKey.selector);
+        wires[8] = IEI.Wire(IControllerFull.getCurveWithdrawRateLimitKey.selector,         ICurveFacet.getWithdrawRateLimitKey.selector);
 
-        beacon.setIntegration("CURVE_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("CURVE_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -461,18 +344,12 @@ contract DeployBeaconAndFacetsMainnet is Script {
             usds_    : Ethereum.USDS
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](2);
+        IEI.Wire[] memory wires = new IEI.Wire[](2);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.swapUSDSToDAI.selector,
-            IDAIUSDSFacet.swapUSDSToDAI.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.swapDAIToUSDS.selector,
-            IDAIUSDSFacet.swapDAIToUSDS.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.swapUSDSToDAI.selector, IDAIUSDSFacet.swapUSDSToDAI.selector);
+        wires[1] = IEI.Wire(IControllerFull.swapDAIToUSDS.selector, IDAIUSDSFacet.swapDAIToUSDS.selector);
 
-        beacon.setIntegration("DAIUSDS_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("DAIUSDS_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -481,42 +358,18 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireERC4626Facet() internal returns (address facet) {
         facet = address(new ERC4626Facet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](8);
+        IEI.Wire[] memory wires = new IEI.Wire[](8);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setMaxExchangeRate.selector,
-            IERC4626Facet.setMaxExchangeRate.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.depositERC4626.selector,
-            IERC4626Facet.deposit.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.withdrawERC4626.selector,
-            IERC4626Facet.withdraw.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.redeemERC4626.selector,
-            IERC4626Facet.redeem.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.EXCHANGE_RATE_PRECISION.selector,
-            IERC4626Facet.EXCHANGE_RATE_PRECISION.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.maxExchangeRates.selector,
-            IERC4626Facet.getMaxExchangeRate.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getERC4626DepositRateLimitKey.selector,
-            IERC4626Facet.getDepositRateLimitKey.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getERC4626WithdrawRateLimitKey.selector,
-            IERC4626Facet.getWithdrawRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.setMaxExchangeRate.selector,             IERC4626Facet.setMaxExchangeRate.selector);
+        wires[1] = IEI.Wire(IControllerFull.depositERC4626.selector,                 IERC4626Facet.deposit.selector);
+        wires[2] = IEI.Wire(IControllerFull.withdrawERC4626.selector,                IERC4626Facet.withdraw.selector);
+        wires[3] = IEI.Wire(IControllerFull.redeemERC4626.selector,                  IERC4626Facet.redeem.selector);
+        wires[4] = IEI.Wire(IControllerFull.EXCHANGE_RATE_PRECISION.selector,        IERC4626Facet.EXCHANGE_RATE_PRECISION.selector);
+        wires[5] = IEI.Wire(IControllerFull.maxExchangeRates.selector,               IERC4626Facet.getMaxExchangeRate.selector);
+        wires[6] = IEI.Wire(IControllerFull.getERC4626DepositRateLimitKey.selector,  IERC4626Facet.getDepositRateLimitKey.selector);
+        wires[7] = IEI.Wire(IControllerFull.getERC4626WithdrawRateLimitKey.selector, IERC4626Facet.getWithdrawRateLimitKey.selector);
 
-        beacon.setIntegration("ERC4626_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("ERC4626_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -525,42 +378,18 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireERC7540Facet() internal returns (address facet) {
         facet = address(new ERC7540Facet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](8);
+        IEI.Wire[] memory wires = new IEI.Wire[](8);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.requestDepositERC7540.selector,
-            IERC7540Facet.requestDeposit.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.claimDepositERC7540.selector,
-            IERC7540Facet.claimDeposit.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.requestRedeemERC7540.selector,
-            IERC7540Facet.requestRedeem.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.claimRedeemERC7540.selector,
-            IERC7540Facet.claimRedeem.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getERC7540RequestDepositRateLimitKey.selector,
-            IERC7540Facet.getRequestDepositRateLimitKey.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getERC7540ClaimDepositRateLimitKey.selector,
-            IERC7540Facet.getClaimDepositRateLimitKey.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getERC7540RequestRedeemRateLimitKey.selector,
-            IERC7540Facet.getRequestRedeemRateLimitKey.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getERC7540ClaimRedeemRateLimitKey.selector,
-            IERC7540Facet.getClaimRedeemRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.requestDepositERC7540.selector,                IERC7540Facet.requestDeposit.selector);
+        wires[1] = IEI.Wire(IControllerFull.claimDepositERC7540.selector,                  IERC7540Facet.claimDeposit.selector);
+        wires[2] = IEI.Wire(IControllerFull.requestRedeemERC7540.selector,                 IERC7540Facet.requestRedeem.selector);
+        wires[3] = IEI.Wire(IControllerFull.claimRedeemERC7540.selector,                   IERC7540Facet.claimRedeem.selector);
+        wires[4] = IEI.Wire(IControllerFull.getERC7540RequestDepositRateLimitKey.selector, IERC7540Facet.getRequestDepositRateLimitKey.selector);
+        wires[5] = IEI.Wire(IControllerFull.getERC7540ClaimDepositRateLimitKey.selector,   IERC7540Facet.getClaimDepositRateLimitKey.selector);
+        wires[6] = IEI.Wire(IControllerFull.getERC7540RequestRedeemRateLimitKey.selector,  IERC7540Facet.getRequestRedeemRateLimitKey.selector);
+        wires[7] = IEI.Wire(IControllerFull.getERC7540ClaimRedeemRateLimitKey.selector,    IERC7540Facet.getClaimRedeemRateLimitKey.selector);
 
-        beacon.setIntegration("ERC7540_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("ERC7540_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -574,62 +403,23 @@ contract DeployBeaconAndFacetsMainnet is Script {
             usde_   : Ethereum.USDE
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](13);
+        IEI.Wire[] memory wires = new IEI.Wire[](13);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setEthenaDelegatedSigner.selector,
-            IEthenaFacet.setDelegatedSigner.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.removeEthenaDelegatedSigner.selector,
-            IEthenaFacet.removeDelegatedSigner.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.prepareUSDeMint.selector,
-            IEthenaFacet.prepareMint.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.prepareUSDeBurn.selector,
-            IEthenaFacet.prepareBurn.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.cooldownAssetsSUSDe.selector,
-            IEthenaFacet.cooldownAssets.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.cooldownSharesSUSDe.selector,
-            IEthenaFacet.cooldownShares.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.unstakeSUSDe.selector,
-            IEthenaFacet.unstake.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setEthenaDelegatedSignerRateLimitKey.selector,
-            IEthenaFacet.setDelegatedSignerRateLimitKey.selector
-        );
-        wires[8] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.removeEthenaDelegatedSignerRateLimitKey.selector,
-            IEthenaFacet.removeDelegatedSignerRateLimitKey.selector
-        );
-        wires[9] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.usdeMintRateLimitKey.selector,
-            IEthenaFacet.mintRateLimitKey.selector
-        );
-        wires[10] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.usdeBurnRateLimitKey.selector,
-            IEthenaFacet.burnRateLimitKey.selector
-        );
-        wires[11] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.usdeCooldownRateLimitKey.selector,
-            IEthenaFacet.cooldownRateLimitKey.selector
-        );
-        wires[12] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.usdeUnstakeRateLimitKey.selector,
-            IEthenaFacet.unstakeRateLimitKey.selector
-        );
+        wires[0]  = IEI.Wire(IControllerFull.setEthenaDelegatedSigner.selector,                IEthenaFacet.setDelegatedSigner.selector);
+        wires[1]  = IEI.Wire(IControllerFull.removeEthenaDelegatedSigner.selector,             IEthenaFacet.removeDelegatedSigner.selector);
+        wires[2]  = IEI.Wire(IControllerFull.prepareUSDeMint.selector,                         IEthenaFacet.prepareMint.selector);
+        wires[3]  = IEI.Wire(IControllerFull.prepareUSDeBurn.selector,                         IEthenaFacet.prepareBurn.selector);
+        wires[4]  = IEI.Wire(IControllerFull.cooldownAssetsSUSDe.selector,                     IEthenaFacet.cooldownAssets.selector);
+        wires[5]  = IEI.Wire(IControllerFull.cooldownSharesSUSDe.selector,                     IEthenaFacet.cooldownShares.selector);
+        wires[6]  = IEI.Wire(IControllerFull.unstakeSUSDe.selector,                            IEthenaFacet.unstake.selector);
+        wires[7]  = IEI.Wire(IControllerFull.setEthenaDelegatedSignerRateLimitKey.selector,    IEthenaFacet.setDelegatedSignerRateLimitKey.selector);
+        wires[8]  = IEI.Wire(IControllerFull.removeEthenaDelegatedSignerRateLimitKey.selector, IEthenaFacet.removeDelegatedSignerRateLimitKey.selector);
+        wires[9]  = IEI.Wire(IControllerFull.usdeMintRateLimitKey.selector,                    IEthenaFacet.mintRateLimitKey.selector);
+        wires[10] = IEI.Wire(IControllerFull.usdeBurnRateLimitKey.selector,                    IEthenaFacet.burnRateLimitKey.selector);
+        wires[11] = IEI.Wire(IControllerFull.usdeCooldownRateLimitKey.selector,                IEthenaFacet.cooldownRateLimitKey.selector);
+        wires[12] = IEI.Wire(IControllerFull.usdeUnstakeRateLimitKey.selector,                 IEthenaFacet.unstakeRateLimitKey.selector);
 
-        beacon.setIntegration("USDE_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("ETHENA_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -638,34 +428,16 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireFarmFacet() internal returns (address facet) {
         facet = address(new FarmFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](6);
+        IEI.Wire[] memory wires = new IEI.Wire[](6);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.depositToFarm.selector,
-            IFarmFacet.deposit.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.claimRewardFromFarm.selector,
-            IFarmFacet.claimReward.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.withdrawFromFarm.selector,
-            IFarmFacet.withdraw.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getFarmClaimRewardRateLimitKey.selector,
-            IFarmFacet.getClaimRewardRateLimitKey.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getFarmDepositRateLimitKey.selector,
-            IFarmFacet.getDepositRateLimitKey.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getFarmWithdrawRateLimitKey.selector,
-            IFarmFacet.getWithdrawRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.depositToFarm.selector,                  IFarmFacet.deposit.selector);
+        wires[1] = IEI.Wire(IControllerFull.claimRewardFromFarm.selector,            IFarmFacet.claimReward.selector);
+        wires[2] = IEI.Wire(IControllerFull.withdrawFromFarm.selector,               IFarmFacet.withdraw.selector);
+        wires[3] = IEI.Wire(IControllerFull.getFarmClaimRewardRateLimitKey.selector, IFarmFacet.getClaimRewardRateLimitKey.selector);
+        wires[4] = IEI.Wire(IControllerFull.getFarmDepositRateLimitKey.selector,     IFarmFacet.getDepositRateLimitKey.selector);
+        wires[5] = IEI.Wire(IControllerFull.getFarmWithdrawRateLimitKey.selector,    IFarmFacet.getWithdrawRateLimitKey.selector);
 
-        beacon.setIntegration("FARM_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("FARM_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -674,26 +446,14 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireLayerZeroFacet() internal returns (address facet) {
         facet = address(new LayerZeroFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](4);
+        IEI.Wire[] memory wires = new IEI.Wire[](4);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setLayerZeroRecipient.selector,
-            ILayerZeroFacet.setRecipient.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.transferTokenLayerZero.selector,
-            ILayerZeroFacet.transfer.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.layerZeroRecipients.selector,
-            ILayerZeroFacet.getRecipient.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getLayerZeroTransferRateLimitKey.selector,
-            ILayerZeroFacet.getTransferRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.setLayerZeroRecipient.selector,            ILayerZeroFacet.setRecipient.selector);
+        wires[1] = IEI.Wire(IControllerFull.transferTokenLayerZero.selector,           ILayerZeroFacet.transfer.selector);
+        wires[2] = IEI.Wire(IControllerFull.layerZeroRecipients.selector,              ILayerZeroFacet.getRecipient.selector);
+        wires[3] = IEI.Wire(IControllerFull.getLayerZeroTransferRateLimitKey.selector, ILayerZeroFacet.getTransferRateLimitKey.selector);
 
-        beacon.setIntegration("LAYER_ZERO_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("LAYER_ZERO_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -702,26 +462,14 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireMapleFacet() internal returns (address facet) {
         facet = address(new MapleFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](4);
+        IEI.Wire[] memory wires = new IEI.Wire[](4);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.requestMapleRedemption.selector,
-            IMapleFacet.requestRedemption.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.cancelMapleRedemption.selector,
-            IMapleFacet.cancelRedemption.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getMapleCancelRedeemRateLimitKey.selector,
-            IMapleFacet.getCancelRedeemRateLimitKey.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getMapleRequestRedeemRateLimitKey.selector,
-            IMapleFacet.getRequestRedeemRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.requestMapleRedemption.selector,            IMapleFacet.requestRedemption.selector);
+        wires[1] = IEI.Wire(IControllerFull.cancelMapleRedemption.selector,             IMapleFacet.cancelRedemption.selector);
+        wires[2] = IEI.Wire(IControllerFull.getMapleCancelRedeemRateLimitKey.selector,  IMapleFacet.getCancelRedeemRateLimitKey.selector);
+        wires[3] = IEI.Wire(IControllerFull.getMapleRequestRedeemRateLimitKey.selector, IMapleFacet.getRequestRedeemRateLimitKey.selector);
 
-        beacon.setIntegration("MAPLE_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("MAPLE_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -730,18 +478,12 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireMerklFacet() internal returns (address facet) {
         facet = address(new MerklFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](2);
+        IEI.Wire[] memory wires = new IEI.Wire[](2);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.toggleOperatorMerkl.selector,
-            IMerklFacet.toggleOperator.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getMerklToggleOperatorRateLimitKey.selector,
-            IMerklFacet.getToggleOperatorRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.toggleOperatorMerkl.selector,                IMerklFacet.toggleOperator.selector);
+        wires[1] = IEI.Wire(IControllerFull.getMerklToggleOperatorRateLimitKey.selector, IMerklFacet.getToggleOperatorRateLimitKey.selector);
 
-        beacon.setIntegration("MERKL_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("MERKL_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -750,66 +492,24 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireOTCFacet() internal returns (address facet) {
         facet = address(new OTCFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](14);
+        IEI.Wire[] memory wires = new IEI.Wire[](14);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setOTCMaxSlippage.selector,
-            IOTCFacet.setMaxSlippage.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setOTCBuffer.selector,
-            IOTCFacet.setBuffer.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setOTCRechargeRate.selector,
-            IOTCFacet.setRechargeRate.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setOTCWhitelistedAsset.selector,
-            IOTCFacet.setIsWhitelisted.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.otcSend.selector,
-            IOTCFacet.send.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.otcClaim.selector,
-            IOTCFacet.claim.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getOTCBuffer.selector,
-            IOTCFacet.getBuffer.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getOTCMaxSlippage.selector,
-            IOTCFacet.getMaxSlippage.selector
-        );
-        wires[8] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getOTCRechargeRate.selector,
-            IOTCFacet.getRechargeRate.selector
-        );
-        wires[9] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.otcWhitelistedAssets.selector,
-            IOTCFacet.getIsWhitelisted.selector
-        );
-        wires[10] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.otcs.selector,
-            IOTCFacet.getState.selector
-        );
-        wires[11] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getOtcClaimWithRecharge.selector,
-            IOTCFacet.getClaimWithRecharge.selector
-        );
-        wires[12] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.isOtcSwapReady.selector,
-            IOTCFacet.getIsSwapReady.selector
-        );
-        wires[13] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getOTCSwapRateLimitKey.selector,
-            IOTCFacet.getSwapRateLimitKey.selector
-        );
+        wires[0]  = IEI.Wire(IControllerFull.setOTCMaxSlippage.selector,       IOTCFacet.setMaxSlippage.selector);
+        wires[1]  = IEI.Wire(IControllerFull.setOTCBuffer.selector,            IOTCFacet.setBuffer.selector);
+        wires[2]  = IEI.Wire(IControllerFull.setOTCRechargeRate.selector,      IOTCFacet.setRechargeRate.selector);
+        wires[3]  = IEI.Wire(IControllerFull.setOTCWhitelistedAsset.selector,  IOTCFacet.setIsWhitelisted.selector);
+        wires[4]  = IEI.Wire(IControllerFull.otcSend.selector,                 IOTCFacet.send.selector);
+        wires[5]  = IEI.Wire(IControllerFull.otcClaim.selector,                IOTCFacet.claim.selector);
+        wires[6]  = IEI.Wire(IControllerFull.getOTCBuffer.selector,            IOTCFacet.getBuffer.selector);
+        wires[7]  = IEI.Wire(IControllerFull.getOTCMaxSlippage.selector,       IOTCFacet.getMaxSlippage.selector);
+        wires[8]  = IEI.Wire(IControllerFull.getOTCRechargeRate.selector,      IOTCFacet.getRechargeRate.selector);
+        wires[9]  = IEI.Wire(IControllerFull.otcWhitelistedAssets.selector,    IOTCFacet.getIsWhitelisted.selector);
+        wires[10] = IEI.Wire(IControllerFull.otcs.selector,                    IOTCFacet.getState.selector);
+        wires[11] = IEI.Wire(IControllerFull.getOtcClaimWithRecharge.selector, IOTCFacet.getClaimWithRecharge.selector);
+        wires[12] = IEI.Wire(IControllerFull.isOtcSwapReady.selector,          IOTCFacet.getIsSwapReady.selector);
+        wires[13] = IEI.Wire(IControllerFull.getOTCSwapRateLimitKey.selector,  IOTCFacet.getSwapRateLimitKey.selector);
 
-        beacon.setIntegration("OTC_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("OTC_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -820,18 +520,12 @@ contract DeployBeaconAndFacetsMainnet is Script {
             router_ : GroveEthereum.PENDLE_ROUTER
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](2);
+        IEI.Wire[] memory wires = new IEI.Wire[](2);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.redeemPendlePT.selector,
-            IPendleFacet.redeem.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getPendleRedeemRateLimitKey.selector,
-            IPendleFacet.getRedeemRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.redeemPendlePT.selector,              IPendleFacet.redeem.selector);
+        wires[1] = IEI.Wire(IControllerFull.getPendleRedeemRateLimitKey.selector, IPendleFacet.getRedeemRateLimitKey.selector);
 
-        beacon.setIntegration("PENDLE_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("PENDLE_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -846,26 +540,14 @@ contract DeployBeaconAndFacetsMainnet is Script {
             usds_    : Ethereum.USDS
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](4);
+        IEI.Wire[] memory wires = new IEI.Wire[](4);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.swapUSDSToUSDC.selector,
-            IPSMFacet.swapUSDSToUSDC.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.swapUSDCToUSDS.selector,
-            IPSMFacet.swapUSDCToUSDS.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.psmTo18ConversionFactor.selector,
-            IPSMFacet.to18ConversionFactor.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.psmUSDSToUSDCSwapRateLimitKey.selector,
-            IPSMFacet.usdsToUSDCSwapRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.swapUSDSToUSDC.selector,                IPSMFacet.swapUSDSToUSDC.selector);
+        wires[1] = IEI.Wire(IControllerFull.swapUSDCToUSDS.selector,                IPSMFacet.swapUSDCToUSDS.selector);
+        wires[2] = IEI.Wire(IControllerFull.psmTo18ConversionFactor.selector,       IPSMFacet.to18ConversionFactor.selector);
+        wires[3] = IEI.Wire(IControllerFull.psmUSDSToUSDCSwapRateLimitKey.selector, IPSMFacet.usdsToUSDCSwapRateLimitKey.selector);
 
-        beacon.setIntegration("PSM_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("PSM_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -874,18 +556,12 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireSparkVaultFacet() internal returns (address facet) {
         facet = address(new SparkVaultFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](2);
+        IEI.Wire[] memory wires = new IEI.Wire[](2);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.takeFromSparkVault.selector,
-            ISparkVaultFacet.take.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getSparkVaultTakeRateLimitKey.selector,
-            ISparkVaultFacet.getTakeRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.takeFromSparkVault.selector,            ISparkVaultFacet.take.selector);
+        wires[1] = IEI.Wire(IControllerFull.getSparkVaultTakeRateLimitKey.selector, ISparkVaultFacet.getTakeRateLimitKey.selector);
 
-        beacon.setIntegration("SPARK_VAULT_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("SPARK_VAULT_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -897,18 +573,12 @@ contract DeployBeaconAndFacetsMainnet is Script {
             ustb_ : Ethereum.USTB
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](2);
+        IEI.Wire[] memory wires = new IEI.Wire[](2);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.subscribeSuperstate.selector,
-            ISuperstateFacet.subscribe.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.superstateSubscribeRateLimitKey.selector,
-            ISuperstateFacet.subscribeRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.subscribeSuperstate.selector,             ISuperstateFacet.subscribe.selector);
+        wires[1] = IEI.Wire(IControllerFull.superstateSubscribeRateLimitKey.selector, ISuperstateFacet.subscribeRateLimitKey.selector);
 
-        beacon.setIntegration("SUPERSTATE_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("SUPERSTATE_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -917,18 +587,12 @@ contract DeployBeaconAndFacetsMainnet is Script {
     function _deployAndWireTransferAssetFacet() internal returns (address facet) {
         facet = address(new TransferAssetFacet());
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](2);
+        IEI.Wire[] memory wires = new IEI.Wire[](2);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.transferAsset.selector,
-            ITransferAssetFacet.transfer.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getTransferAssetTransferRateLimitKey.selector,
-            ITransferAssetFacet.getTransferRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.transferAsset.selector,                        ITransferAssetFacet.transfer.selector);
+        wires[1] = IEI.Wire(IControllerFull.getTransferAssetTransferRateLimitKey.selector, ITransferAssetFacet.getTransferRateLimitKey.selector);
 
-        beacon.setIntegration("TRANSFER_ASSET_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("TRANSFER_ASSET_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -940,74 +604,26 @@ contract DeployBeaconAndFacetsMainnet is Script {
             router_          : _UNISWAP_V3_ROUTER
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](16);
+        IEI.Wire[] memory wires = new IEI.Wire[](16);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setUniswapV3MaxSlippage.selector,
-            IUniswapV3Facet.setMaxSlippage.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setUniswapV3PoolMaxTickDelta.selector,
-            IUniswapV3Facet.setMaxTickDelta.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setUniswapV3AddLiquidityLowerTickBound.selector,
-            IUniswapV3Facet.setLiquidityLowerTickBound.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setUniswapV3AddLiquidityUpperTickBound.selector,
-            IUniswapV3Facet.setLiquidityUpperTickBound.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setUniswapV3TWAPSecondsAgo.selector,
-            IUniswapV3Facet.setTWAPSecondsAgo.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.swapUniswapV3.selector,
-            IUniswapV3Facet.swap.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.addLiquidityUniswapV3.selector,
-            IUniswapV3Facet.addLiquidity.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.removeLiquidityUniswapV3.selector,
-            IUniswapV3Facet.removeLiquidity.selector
-        );
-        wires[8] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV3AggregateDepositRateLimitKey.selector,
-            IUniswapV3Facet.getAggregateDepositRateLimitKey.selector
-        );
-        wires[9] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV3AssetDepositRateLimitKey.selector,
-            IUniswapV3Facet.getAssetDepositRateLimitKey.selector
-        );
-        wires[10] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV3AddLiquidityTickBounds.selector,
-            IUniswapV3Facet.getLiquidityTickBounds.selector
-        );
-        wires[11] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV3MaxSlippage.selector,
-            IUniswapV3Facet.getMaxSlippage.selector
-        );
-        wires[12] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV3PoolMaxTickDelta.selector,
-            IUniswapV3Facet.getMaxTickDelta.selector
-        );
-        wires[13] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV3SwapRateLimitKey.selector,
-            IUniswapV3Facet.getSwapRateLimitKey.selector
-        );
-        wires[14] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV3TWAPSecondsAgo.selector,
-            IUniswapV3Facet.getTWAPSecondsAgo.selector
-        );
-        wires[15] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV3WithdrawRateLimitKey.selector,
-            IUniswapV3Facet.getWithdrawRateLimitKey.selector
-        );
+        wires[0]  = IEI.Wire(IControllerFull.setUniswapV3MaxSlippage.selector,                  IUniswapV3Facet.setMaxSlippage.selector);
+        wires[1]  = IEI.Wire(IControllerFull.setUniswapV3PoolMaxTickDelta.selector,             IUniswapV3Facet.setMaxTickDelta.selector);
+        wires[2]  = IEI.Wire(IControllerFull.setUniswapV3AddLiquidityLowerTickBound.selector,   IUniswapV3Facet.setLiquidityLowerTickBound.selector);
+        wires[3]  = IEI.Wire(IControllerFull.setUniswapV3AddLiquidityUpperTickBound.selector,   IUniswapV3Facet.setLiquidityUpperTickBound.selector);
+        wires[4]  = IEI.Wire(IControllerFull.setUniswapV3TWAPSecondsAgo.selector,               IUniswapV3Facet.setTWAPSecondsAgo.selector);
+        wires[5]  = IEI.Wire(IControllerFull.swapUniswapV3.selector,                            IUniswapV3Facet.swap.selector);
+        wires[6]  = IEI.Wire(IControllerFull.addLiquidityUniswapV3.selector,                    IUniswapV3Facet.addLiquidity.selector);
+        wires[7]  = IEI.Wire(IControllerFull.removeLiquidityUniswapV3.selector,                 IUniswapV3Facet.removeLiquidity.selector);
+        wires[8]  = IEI.Wire(IControllerFull.getUniswapV3AggregateDepositRateLimitKey.selector, IUniswapV3Facet.getAggregateDepositRateLimitKey.selector);
+        wires[9]  = IEI.Wire(IControllerFull.getUniswapV3AssetDepositRateLimitKey.selector,     IUniswapV3Facet.getAssetDepositRateLimitKey.selector);
+        wires[10] = IEI.Wire(IControllerFull.getUniswapV3AddLiquidityTickBounds.selector,       IUniswapV3Facet.getLiquidityTickBounds.selector);
+        wires[11] = IEI.Wire(IControllerFull.getUniswapV3MaxSlippage.selector,                  IUniswapV3Facet.getMaxSlippage.selector);
+        wires[12] = IEI.Wire(IControllerFull.getUniswapV3PoolMaxTickDelta.selector,             IUniswapV3Facet.getMaxTickDelta.selector);
+        wires[13] = IEI.Wire(IControllerFull.getUniswapV3SwapRateLimitKey.selector,             IUniswapV3Facet.getSwapRateLimitKey.selector);
+        wires[14] = IEI.Wire(IControllerFull.getUniswapV3TWAPSecondsAgo.selector,               IUniswapV3Facet.getTWAPSecondsAgo.selector);
+        wires[15] = IEI.Wire(IControllerFull.getUniswapV3WithdrawRateLimitKey.selector,         IUniswapV3Facet.getWithdrawRateLimitKey.selector);
 
-        beacon.setIntegration("UNISWAP_V3_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("UNISWAP_V3_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -1020,58 +636,22 @@ contract DeployBeaconAndFacetsMainnet is Script {
             router_          : _UNISWAP_V4_ROUTER
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](12);
+        IEI.Wire[] memory wires = new IEI.Wire[](12);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setUniswapV4MaxSlippage.selector,
-            IUniswapV4Facet.setMaxSlippage.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setUniswapV4TickLimits.selector,
-            IUniswapV4Facet.setTickLimits.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.mintPositionUniswapV4.selector,
-            IUniswapV4Facet.mintPosition.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.increaseLiquidityUniswapV4.selector,
-            IUniswapV4Facet.increasePosition.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.decreaseLiquidityUniswapV4.selector,
-            IUniswapV4Facet.decreasePosition.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.swapUniswapV4.selector,
-            IUniswapV4Facet.swap.selector
-        );
-        wires[6] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV4AggregateDepositRateLimitKey.selector,
-            IUniswapV4Facet.getAggregateDepositRateLimitKey.selector
-        );
-        wires[7] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV4AssetDepositRateLimitKey.selector,
-            IUniswapV4Facet.getAssetDepositRateLimitKey.selector
-        );
-        wires[8] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.uniswapV4MaxSlippages.selector,
-            IUniswapV4Facet.getMaxSlippage.selector
-        );
-        wires[9] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV4SwapRateLimitKey.selector,
-            IUniswapV4Facet.getSwapRateLimitKey.selector
-        );
-        wires[10] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.uniswapV4TickLimits.selector,
-            IUniswapV4Facet.getTickLimits.selector
-        );
-        wires[11] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getUniswapV4WithdrawRateLimitKey.selector,
-            IUniswapV4Facet.getWithdrawRateLimitKey.selector
-        );
+        wires[0]  = IEI.Wire(IControllerFull.setUniswapV4MaxSlippage.selector,                  IUniswapV4Facet.setMaxSlippage.selector);
+        wires[1]  = IEI.Wire(IControllerFull.setUniswapV4TickLimits.selector,                   IUniswapV4Facet.setTickLimits.selector);
+        wires[2]  = IEI.Wire(IControllerFull.mintPositionUniswapV4.selector,                    IUniswapV4Facet.mintPosition.selector);
+        wires[3]  = IEI.Wire(IControllerFull.increaseLiquidityUniswapV4.selector,               IUniswapV4Facet.increasePosition.selector);
+        wires[4]  = IEI.Wire(IControllerFull.decreaseLiquidityUniswapV4.selector,               IUniswapV4Facet.decreasePosition.selector);
+        wires[5]  = IEI.Wire(IControllerFull.swapUniswapV4.selector,                            IUniswapV4Facet.swap.selector);
+        wires[6]  = IEI.Wire(IControllerFull.getUniswapV4AggregateDepositRateLimitKey.selector, IUniswapV4Facet.getAggregateDepositRateLimitKey.selector);
+        wires[7]  = IEI.Wire(IControllerFull.getUniswapV4AssetDepositRateLimitKey.selector,     IUniswapV4Facet.getAssetDepositRateLimitKey.selector);
+        wires[8]  = IEI.Wire(IControllerFull.uniswapV4MaxSlippages.selector,                    IUniswapV4Facet.getMaxSlippage.selector);
+        wires[9]  = IEI.Wire(IControllerFull.getUniswapV4SwapRateLimitKey.selector,             IUniswapV4Facet.getSwapRateLimitKey.selector);
+        wires[10] = IEI.Wire(IControllerFull.uniswapV4TickLimits.selector,                      IUniswapV4Facet.getTickLimits.selector);
+        wires[11] = IEI.Wire(IControllerFull.getUniswapV4WithdrawRateLimitKey.selector,         IUniswapV4Facet.getWithdrawRateLimitKey.selector);
 
-        beacon.setIntegration("UNISWAP_V4_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("UNISWAP_V4_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -1082,34 +662,16 @@ contract DeployBeaconAndFacetsMainnet is Script {
             usds_ : Ethereum.USDS
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](6);
+        IEI.Wire[] memory wires = new IEI.Wire[](6);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.setUSDSVault.selector,
-            IUSDSFacet.setVault.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.mintUSDS.selector,
-            IUSDSFacet.mint.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.burnUSDS.selector,
-            IUSDSFacet.burn.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.usdsVault.selector,
-            IUSDSFacet.vault.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.usdsMintRateLimitKey.selector,
-            IUSDSFacet.mintRateLimitKey.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.usdsBurnRateLimitKey.selector,
-            IUSDSFacet.burnRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.setUSDSVault.selector,         IUSDSFacet.setVault.selector);
+        wires[1] = IEI.Wire(IControllerFull.mintUSDS.selector,             IUSDSFacet.mint.selector);
+        wires[2] = IEI.Wire(IControllerFull.burnUSDS.selector,             IUSDSFacet.burn.selector);
+        wires[3] = IEI.Wire(IControllerFull.usdsVault.selector,            IUSDSFacet.vault.selector);
+        wires[4] = IEI.Wire(IControllerFull.usdsMintRateLimitKey.selector, IUSDSFacet.mintRateLimitKey.selector);
+        wires[5] = IEI.Wire(IControllerFull.usdsBurnRateLimitKey.selector, IUSDSFacet.burnRateLimitKey.selector);
 
-        beacon.setIntegration("USDS_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("USDS_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -1121,34 +683,16 @@ contract DeployBeaconAndFacetsMainnet is Script {
             weth_  : Ethereum.WETH
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](6);
+        IEI.Wire[] memory wires = new IEI.Wire[](6);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.depositToWeETH.selector,
-            IWEETHFacet.deposit.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.requestWithdrawFromWeETH.selector,
-            IWEETHFacet.requestWithdraw.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.claimWithdrawalFromWeETH.selector,
-            IWEETHFacet.claimWithdrawal.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getWEETHDepositRateLimitKey.selector,
-            IWEETHFacet.getDepositRateLimitKey.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getWEETHRequestWithdrawRateLimitKey.selector,
-            IWEETHFacet.getRequestWithdrawRateLimitKey.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.getWEETHClaimWithdrawRateLimitKey.selector,
-            IWEETHFacet.getClaimWithdrawRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.depositToWeETH.selector,                      IWEETHFacet.deposit.selector);
+        wires[1] = IEI.Wire(IControllerFull.requestWithdrawFromWeETH.selector,            IWEETHFacet.requestWithdraw.selector);
+        wires[2] = IEI.Wire(IControllerFull.claimWithdrawalFromWeETH.selector,            IWEETHFacet.claimWithdrawal.selector);
+        wires[3] = IEI.Wire(IControllerFull.getWEETHDepositRateLimitKey.selector,         IWEETHFacet.getDepositRateLimitKey.selector);
+        wires[4] = IEI.Wire(IControllerFull.getWEETHRequestWithdrawRateLimitKey.selector, IWEETHFacet.getRequestWithdrawRateLimitKey.selector);
+        wires[5] = IEI.Wire(IControllerFull.getWEETHClaimWithdrawRateLimitKey.selector,   IWEETHFacet.getClaimWithdrawRateLimitKey.selector);
 
-        beacon.setIntegration("WEETH_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("WEETH_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -1159,18 +703,12 @@ contract DeployBeaconAndFacetsMainnet is Script {
             weth_ : Ethereum.WETH
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](2);
+        IEI.Wire[] memory wires = new IEI.Wire[](2);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.wrapAllProxyETH.selector,
-            IWrapProxyETHFacet.wrapAll.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.wrapAllProxyETHRateLimitKey.selector,
-            IWrapProxyETHFacet.wrapRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.wrapAllProxyETH.selector,             IWrapProxyETHFacet.wrapAll.selector);
+        wires[1] = IEI.Wire(IControllerFull.wrapAllProxyETHRateLimitKey.selector, IWrapProxyETHFacet.wrapRateLimitKey.selector);
 
-        beacon.setIntegration("WRAP_PROXY_ETH_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("WRAP_PROXY_ETH_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
@@ -1183,34 +721,16 @@ contract DeployBeaconAndFacetsMainnet is Script {
             wsteth_        : Ethereum.WSTETH
         }));
 
-        IEnumerableIntegrations.Wire[] memory wires = new IEnumerableIntegrations.Wire[](6);
+        IEI.Wire[] memory wires = new IEI.Wire[](6);
 
-        wires[0] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.depositToWstETH.selector,
-            IWSTETHFacet.deposit.selector
-        );
-        wires[1] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.requestWithdrawFromWstETH.selector,
-            IWSTETHFacet.requestWithdraw.selector
-        );
-        wires[2] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.claimWithdrawalFromWstETH.selector,
-            IWSTETHFacet.claimWithdrawal.selector
-        );
-        wires[3] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.wstethDepositRateLimitKey.selector,
-            IWSTETHFacet.depositRateLimitKey.selector
-        );
-        wires[4] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.wstethRequestWithdrawRateLimitKey.selector,
-            IWSTETHFacet.requestWithdrawRateLimitKey.selector
-        );
-        wires[5] = IEnumerableIntegrations.Wire(
-            IMainnetControllerFull.wstethClaimWithdrawRateLimitKey.selector,
-            IWSTETHFacet.claimWithdrawRateLimitKey.selector
-        );
+        wires[0] = IEI.Wire(IControllerFull.depositToWstETH.selector,                   IWSTETHFacet.deposit.selector);
+        wires[1] = IEI.Wire(IControllerFull.requestWithdrawFromWstETH.selector,         IWSTETHFacet.requestWithdraw.selector);
+        wires[2] = IEI.Wire(IControllerFull.claimWithdrawalFromWstETH.selector,         IWSTETHFacet.claimWithdrawal.selector);
+        wires[3] = IEI.Wire(IControllerFull.wstethDepositRateLimitKey.selector,         IWSTETHFacet.depositRateLimitKey.selector);
+        wires[4] = IEI.Wire(IControllerFull.wstethRequestWithdrawRateLimitKey.selector, IWSTETHFacet.requestWithdrawRateLimitKey.selector);
+        wires[5] = IEI.Wire(IControllerFull.wstethClaimWithdrawRateLimitKey.selector,   IWSTETHFacet.claimWithdrawRateLimitKey.selector);
 
-        beacon.setIntegration("WSTETH_FACET", IEnumerableIntegrations.Config({
+        beacon.setIntegration("WSTETH_FACET", IEI.Config({
             facet : facet,
             wires : wires
         }));
