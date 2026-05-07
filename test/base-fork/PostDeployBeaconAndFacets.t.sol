@@ -3,9 +3,12 @@ pragma solidity ^0.8.34;
 
 import { VmSafe } from "../../lib/forge-std/src/Vm.sol";
 
+import { IAccessControl } from "../../lib/diamond-pau/lib/openzeppelin-contracts/contracts/access/IAccessControl.sol";
+
 import { Base }              from "../../lib/diamond-pau/lib/spark-address-registry/src/Base.sol";
 import { Base as GroveBase } from "../../lib/diamond-pau/lib/grove-address-registry/src/Base.sol";
 
+import { IBeacon }                 from "../../lib/diamond-pau/src/interfaces/IBeacon.sol";
 import { IEnumerableIntegrations } from "../../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
 import { Beacon }                  from "../../lib/diamond-pau/src/Beacon.sol";
 
@@ -15,13 +18,13 @@ import { IUniswapV3Facet } from "../../lib/diamond-pau/src/facets/uniswap-v3/IUn
 
 import { PostDeployTestBase } from "../PostDeployTestBase.t.sol";
 
-contract PostDeployFacetsTests is PostDeployTestBase {
+contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
 
-    // From the DeployBaseFacets script (mirror of registry constants used at deploy time).
+    // From the DeployBeaconAndFacetsBase script (mirror of registry constants used at deploy time).
     address internal constant _UNISWAP_V3_POSITION_MANAGER = 0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1;
     address internal constant _UNISWAP_V3_ROUTER           = 0x2626664c2603336E57B271c5C0b26F421741e481;
 
-    // paste from script/output/8453/facets-base-{env}-latest.json
+    // Paste from script/output/8453/beacon-and-facets-base-{env}-latest.json
     address internal constant DEPLOYER             = 0x0000000000000000000000000000000000000000;
     address internal constant ADMIN                = 0x0000000000000000000000000000000000000000;
     address internal constant BEACON               = 0x0000000000000000000000000000000000000000;
@@ -44,7 +47,17 @@ contract PostDeployFacetsTests is PostDeployTestBase {
     }
 
     function _getBlock() internal pure returns (uint256) {
-        return 24684236; // After the Facets deployment block.
+        return 24684236; // After the BeaconAndFacets deployment block.
+    }
+
+    function test_postDeployState_beacon() external {
+        assertEq(beacon.hasRole(DEFAULT_ADMIN_ROLE, ADMIN),    true);
+        assertEq(beacon.hasRole(DEFAULT_ADMIN_ROLE, DEPLOYER), false);
+
+        assertEq(beacon.getRoleMemberCount(DEFAULT_ADMIN_ROLE), 1);
+        assertEq(beacon.getRoleMember(DEFAULT_ADMIN_ROLE, 0),   ADMIN);
+
+        assertEq(beacon.supportsInterface(type(IBeacon).interfaceId), true);
     }
 
     function test_postDeployState_facetConstructorArgs() external {
@@ -73,25 +86,41 @@ contract PostDeployFacetsTests is PostDeployTestBase {
         _assertIntegration("UNISWAP_V3_FACET",     UNISWAP_V3_FACET,     16);
     }
 
-    function test_postDeployEvents_facetIntegrationSet() external {
-        // Expect 9 IntegrationSet events from BEACON, in deploy-script order.
-        VmSafe.EthGetLogs[] memory logs = _getEvents(
-            block.chainid,
-            BEACON,
-            IEnumerableIntegrations.IntegrationSet.selector
-        );
+    function test_postDeployEvents() external {
+        // Expect 12 events on Beacon: 1 RoleGranted (ctor) + 9 IntegrationSet
+        // + 1 RoleGranted (final admin) + 1 RoleRevoked (deployer self-revoke).
+        VmSafe.EthGetLogs[] memory allLogs = _getEvents(block.chainid, BEACON, "");
 
-        assertEq(logs.length, 9);
+        assertEq(allLogs.length, 12);
 
-        _assertIntegrationSetLog(logs[0], "AAVE_FACET",           AAVE_FACET,           6);
-        _assertIntegrationSetLog(logs[1], "CURVE_FACET",          CURVE_FACET,          9);
-        _assertIntegrationSetLog(logs[2], "ERC4626_FACET",        ERC4626_FACET,        8);
-        _assertIntegrationSetLog(logs[3], "MERKL_FACET",          MERKL_FACET,          2);
-        _assertIntegrationSetLog(logs[4], "PENDLE_FACET",         PENDLE_FACET,         2);
-        _assertIntegrationSetLog(logs[5], "PSM3_FACET",           PSM3_FACET,           4);
-        _assertIntegrationSetLog(logs[6], "SPARK_VAULT_FACET",    SPARK_VAULT_FACET,    2);
-        _assertIntegrationSetLog(logs[7], "TRANSFER_ASSET_FACET", TRANSFER_ASSET_FACET, 2);
-        _assertIntegrationSetLog(logs[8], "UNISWAP_V3_FACET",     UNISWAP_V3_FACET,     16);
+        // [0] Constructor: RoleGranted(DEFAULT_ADMIN_ROLE, DEPLOYER, DEPLOYER)
+        assertEq(allLogs[0].topics[0],             IAccessControl.RoleGranted.selector);
+        assertEq(allLogs[0].topics[1],             DEFAULT_ADMIN_ROLE);
+        assertEq(_toAddress(allLogs[0].topics[2]), DEPLOYER);
+        assertEq(_toAddress(allLogs[0].topics[3]), DEPLOYER);
+
+        // [1..9] IntegrationSet × 9, in deploy-script order.
+        _assertIntegrationSetLog(allLogs[1], "AAVE_FACET",           AAVE_FACET,           6);
+        _assertIntegrationSetLog(allLogs[2], "CURVE_FACET",          CURVE_FACET,          9);
+        _assertIntegrationSetLog(allLogs[3], "ERC4626_FACET",        ERC4626_FACET,        8);
+        _assertIntegrationSetLog(allLogs[4], "MERKL_FACET",          MERKL_FACET,          2);
+        _assertIntegrationSetLog(allLogs[5], "PENDLE_FACET",         PENDLE_FACET,         2);
+        _assertIntegrationSetLog(allLogs[6], "PSM3_FACET",           PSM3_FACET,           4);
+        _assertIntegrationSetLog(allLogs[7], "SPARK_VAULT_FACET",    SPARK_VAULT_FACET,    2);
+        _assertIntegrationSetLog(allLogs[8], "TRANSFER_ASSET_FACET", TRANSFER_ASSET_FACET, 2);
+        _assertIntegrationSetLog(allLogs[9], "UNISWAP_V3_FACET",     UNISWAP_V3_FACET,     16);
+
+        // [10] Admin transfer: RoleGranted(DEFAULT_ADMIN_ROLE, ADMIN, DEPLOYER)
+        assertEq(allLogs[10].topics[0],             IAccessControl.RoleGranted.selector);
+        assertEq(allLogs[10].topics[1],             DEFAULT_ADMIN_ROLE);
+        assertEq(_toAddress(allLogs[10].topics[2]), ADMIN);
+        assertEq(_toAddress(allLogs[10].topics[3]), DEPLOYER);
+
+        // [11] Deployer self-revoke: RoleRevoked(DEFAULT_ADMIN_ROLE, DEPLOYER, DEPLOYER)
+        assertEq(allLogs[11].topics[0],             IAccessControl.RoleRevoked.selector);
+        assertEq(allLogs[11].topics[1],             DEFAULT_ADMIN_ROLE);
+        assertEq(_toAddress(allLogs[11].topics[2]), DEPLOYER);
+        assertEq(_toAddress(allLogs[11].topics[3]), DEPLOYER);
     }
 
     function _assertIntegration(
@@ -104,7 +133,6 @@ contract PostDeployFacetsTests is PostDeployTestBase {
         assertEq(cfg.facet,        expectedFacet);
         assertEq(cfg.wires.length, expectedWireCount);
 
-        // Each wired callSelector resolves through the Beacon's dispatch to the same facet.
         for (uint256 i = 0; i < cfg.wires.length; ++i) {
             IEnumerableIntegrations.Dispatch memory d = beacon.getDispatch(cfg.wires[i].callSelector);
             assertEq(d.facet,            expectedFacet);
@@ -121,7 +149,6 @@ contract PostDeployFacetsTests is PostDeployTestBase {
         assertEq(log.topics[0], IEnumerableIntegrations.IntegrationSet.selector);
         assertEq(log.topics[1], expectedId);
 
-        // Decode Config from data: facet (address) + wires (Wire[]).
         ( IEnumerableIntegrations.Config memory cfg ) = abi.decode(log.data, (IEnumerableIntegrations.Config));
 
         assertEq(cfg.facet,        expectedFacet);

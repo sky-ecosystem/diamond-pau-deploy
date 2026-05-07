@@ -1,72 +1,72 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.8.34;
 
-import { Script, stdJson, console } from "../../lib/forge-std/src/Script.sol";
+import { Script, stdJson, console } from "../lib/forge-std/src/Script.sol";
 
-import { ScriptTools } from "../../lib/dss-test/src/ScriptTools.sol";
+import { ScriptTools } from "../lib/dss-test/src/ScriptTools.sol";
 
-import { Ethereum }                  from "../../lib/diamond-pau/lib/spark-address-registry/src/Ethereum.sol";
-import { Ethereum as GroveEthereum } from "../../lib/diamond-pau/lib/grove-address-registry/src/Ethereum.sol";
+import { Ethereum }                  from "../lib/diamond-pau/lib/spark-address-registry/src/Ethereum.sol";
+import { Ethereum as GroveEthereum } from "../lib/diamond-pau/lib/grove-address-registry/src/Ethereum.sol";
 
-import { AaveFacet }          from "../../lib/diamond-pau/src/facets/aave/AaveFacet.sol";
-import { BasinFacet }         from "../../lib/diamond-pau/src/facets/basin/BasinFacet.sol";
-import { CCTPFacet }          from "../../lib/diamond-pau/src/facets/cctp/CCTPFacet.sol";
-import { CentrifugeFacet }    from "../../lib/diamond-pau/src/facets/centrifuge/CentrifugeFacet.sol";
-import { CurveFacet }         from "../../lib/diamond-pau/src/facets/curve/CurveFacet.sol";
-import { DAIUSDSFacet }       from "../../lib/diamond-pau/src/facets/dai-usds/DAIUSDSFacet.sol";
-import { ERC4626Facet }       from "../../lib/diamond-pau/src/facets/erc4626/ERC4626Facet.sol";
-import { ERC7540Facet }       from "../../lib/diamond-pau/src/facets/erc7540/ERC7540Facet.sol";
-import { EthenaFacet }        from "../../lib/diamond-pau/src/facets/ethena/EthenaFacet.sol";
-import { FarmFacet }          from "../../lib/diamond-pau/src/facets/farm/FarmFacet.sol";
-import { LayerZeroFacet }     from "../../lib/diamond-pau/src/facets/layer-zero/LayerZeroFacet.sol";
-import { MapleFacet }         from "../../lib/diamond-pau/src/facets/maple/MapleFacet.sol";
-import { MerklFacet }         from "../../lib/diamond-pau/src/facets/merkl/MerklFacet.sol";
-import { OTCFacet }           from "../../lib/diamond-pau/src/facets/otc/OTCFacet.sol";
-import { PendleFacet }        from "../../lib/diamond-pau/src/facets/pendle/PendleFacet.sol";
-import { PSMFacet }           from "../../lib/diamond-pau/src/facets/psm/PSMFacet.sol";
-import { SparkVaultFacet }    from "../../lib/diamond-pau/src/facets/spark-vault/SparkVaultFacet.sol";
-import { SuperstateFacet }    from "../../lib/diamond-pau/src/facets/superstate/SuperstateFacet.sol";
-import { TransferAssetFacet } from "../../lib/diamond-pau/src/facets/transfer-asset/TransferAssetFacet.sol";
-import { UniswapV3Facet }     from "../../lib/diamond-pau/src/facets/uniswap-v3/UniswapV3Facet.sol";
-import { UniswapV4Facet }     from "../../lib/diamond-pau/src/facets/uniswap-v4/UniswapV4Facet.sol";
-import { USDSFacet }          from "../../lib/diamond-pau/src/facets/usds/USDSFacet.sol";
-import { WEETHFacet }         from "../../lib/diamond-pau/src/facets/weeth/WEETHFacet.sol";
-import { WrapProxyETHFacet }  from "../../lib/diamond-pau/src/facets/wrap-proxy-eth/WrapProxyETHFacet.sol";
-import { WSTETHFacet }        from "../../lib/diamond-pau/src/facets/wsteth/WSTETHFacet.sol";
+import { AaveFacet }          from "../lib/diamond-pau/src/facets/aave/AaveFacet.sol";
+import { BasinFacet }         from "../lib/diamond-pau/src/facets/basin/BasinFacet.sol";
+import { CCTPFacet }          from "../lib/diamond-pau/src/facets/cctp/CCTPFacet.sol";
+import { CentrifugeFacet }    from "../lib/diamond-pau/src/facets/centrifuge/CentrifugeFacet.sol";
+import { CurveFacet }         from "../lib/diamond-pau/src/facets/curve/CurveFacet.sol";
+import { DAIUSDSFacet }       from "../lib/diamond-pau/src/facets/dai-usds/DAIUSDSFacet.sol";
+import { ERC4626Facet }       from "../lib/diamond-pau/src/facets/erc4626/ERC4626Facet.sol";
+import { ERC7540Facet }       from "../lib/diamond-pau/src/facets/erc7540/ERC7540Facet.sol";
+import { EthenaFacet }        from "../lib/diamond-pau/src/facets/ethena/EthenaFacet.sol";
+import { FarmFacet }          from "../lib/diamond-pau/src/facets/farm/FarmFacet.sol";
+import { LayerZeroFacet }     from "../lib/diamond-pau/src/facets/layer-zero/LayerZeroFacet.sol";
+import { MapleFacet }         from "../lib/diamond-pau/src/facets/maple/MapleFacet.sol";
+import { MerklFacet }         from "../lib/diamond-pau/src/facets/merkl/MerklFacet.sol";
+import { OTCFacet }           from "../lib/diamond-pau/src/facets/otc/OTCFacet.sol";
+import { PendleFacet }        from "../lib/diamond-pau/src/facets/pendle/PendleFacet.sol";
+import { PSMFacet }           from "../lib/diamond-pau/src/facets/psm/PSMFacet.sol";
+import { SparkVaultFacet }    from "../lib/diamond-pau/src/facets/spark-vault/SparkVaultFacet.sol";
+import { SuperstateFacet }    from "../lib/diamond-pau/src/facets/superstate/SuperstateFacet.sol";
+import { TransferAssetFacet } from "../lib/diamond-pau/src/facets/transfer-asset/TransferAssetFacet.sol";
+import { UniswapV3Facet }     from "../lib/diamond-pau/src/facets/uniswap-v3/UniswapV3Facet.sol";
+import { UniswapV4Facet }     from "../lib/diamond-pau/src/facets/uniswap-v4/UniswapV4Facet.sol";
+import { USDSFacet }          from "../lib/diamond-pau/src/facets/usds/USDSFacet.sol";
+import { WEETHFacet }         from "../lib/diamond-pau/src/facets/weeth/WEETHFacet.sol";
+import { WrapProxyETHFacet }  from "../lib/diamond-pau/src/facets/wrap-proxy-eth/WrapProxyETHFacet.sol";
+import { WSTETHFacet }        from "../lib/diamond-pau/src/facets/wsteth/WSTETHFacet.sol";
 
-import { IAaveFacet }          from "../../lib/diamond-pau/src/facets/aave/IAaveFacet.sol";
-import { IBasinFacet }         from "../../lib/diamond-pau/src/facets/basin/IBasinFacet.sol";
-import { ICCTPFacet }          from "../../lib/diamond-pau/src/facets/cctp/ICCTPFacet.sol";
-import { ICentrifugeFacet }    from "../../lib/diamond-pau/src/facets/centrifuge/ICentrifugeFacet.sol";
-import { ICurveFacet }         from "../../lib/diamond-pau/src/facets/curve/ICurveFacet.sol";
-import { IDAIUSDSFacet }       from "../../lib/diamond-pau/src/facets/dai-usds/IDAIUSDSFacet.sol";
-import { IERC4626Facet }       from "../../lib/diamond-pau/src/facets/erc4626/IERC4626Facet.sol";
-import { IERC7540Facet }       from "../../lib/diamond-pau/src/facets/erc7540/IERC7540Facet.sol";
-import { IEthenaFacet }        from "../../lib/diamond-pau/src/facets/ethena/IEthenaFacet.sol";
-import { IFarmFacet }          from "../../lib/diamond-pau/src/facets/farm/IFarmFacet.sol";
-import { ILayerZeroFacet }     from "../../lib/diamond-pau/src/facets/layer-zero/ILayerZeroFacet.sol";
-import { IMapleFacet }         from "../../lib/diamond-pau/src/facets/maple/IMapleFacet.sol";
-import { IMerklFacet }         from "../../lib/diamond-pau/src/facets/merkl/IMerklFacet.sol";
-import { IOTCFacet }           from "../../lib/diamond-pau/src/facets/otc/IOTCFacet.sol";
-import { IPendleFacet }        from "../../lib/diamond-pau/src/facets/pendle/IPendleFacet.sol";
-import { IPSMFacet }           from "../../lib/diamond-pau/src/facets/psm/IPSMFacet.sol";
-import { ISparkVaultFacet }    from "../../lib/diamond-pau/src/facets/spark-vault/ISparkVaultFacet.sol";
-import { ISuperstateFacet }    from "../../lib/diamond-pau/src/facets/superstate/ISuperstateFacet.sol";
-import { ITransferAssetFacet } from "../../lib/diamond-pau/src/facets/transfer-asset/ITransferAssetFacet.sol";
-import { IUniswapV3Facet }     from "../../lib/diamond-pau/src/facets/uniswap-v3/IUniswapV3Facet.sol";
-import { IUniswapV4Facet }     from "../../lib/diamond-pau/src/facets/uniswap-v4/IUniswapV4Facet.sol";
-import { IUSDSFacet }          from "../../lib/diamond-pau/src/facets/usds/IUSDSFacet.sol";
-import { IWEETHFacet }         from "../../lib/diamond-pau/src/facets/weeth/IWEETHFacet.sol";
-import { IWrapProxyETHFacet }  from "../../lib/diamond-pau/src/facets/wrap-proxy-eth/IWrapProxyETHFacet.sol";
-import { IWSTETHFacet }        from "../../lib/diamond-pau/src/facets/wsteth/IWSTETHFacet.sol";
+import { IAaveFacet }          from "../lib/diamond-pau/src/facets/aave/IAaveFacet.sol";
+import { IBasinFacet }         from "../lib/diamond-pau/src/facets/basin/IBasinFacet.sol";
+import { ICCTPFacet }          from "../lib/diamond-pau/src/facets/cctp/ICCTPFacet.sol";
+import { ICentrifugeFacet }    from "../lib/diamond-pau/src/facets/centrifuge/ICentrifugeFacet.sol";
+import { ICurveFacet }         from "../lib/diamond-pau/src/facets/curve/ICurveFacet.sol";
+import { IDAIUSDSFacet }       from "../lib/diamond-pau/src/facets/dai-usds/IDAIUSDSFacet.sol";
+import { IERC4626Facet }       from "../lib/diamond-pau/src/facets/erc4626/IERC4626Facet.sol";
+import { IERC7540Facet }       from "../lib/diamond-pau/src/facets/erc7540/IERC7540Facet.sol";
+import { IEthenaFacet }        from "../lib/diamond-pau/src/facets/ethena/IEthenaFacet.sol";
+import { IFarmFacet }          from "../lib/diamond-pau/src/facets/farm/IFarmFacet.sol";
+import { ILayerZeroFacet }     from "../lib/diamond-pau/src/facets/layer-zero/ILayerZeroFacet.sol";
+import { IMapleFacet }         from "../lib/diamond-pau/src/facets/maple/IMapleFacet.sol";
+import { IMerklFacet }         from "../lib/diamond-pau/src/facets/merkl/IMerklFacet.sol";
+import { IOTCFacet }           from "../lib/diamond-pau/src/facets/otc/IOTCFacet.sol";
+import { IPendleFacet }        from "../lib/diamond-pau/src/facets/pendle/IPendleFacet.sol";
+import { IPSMFacet }           from "../lib/diamond-pau/src/facets/psm/IPSMFacet.sol";
+import { ISparkVaultFacet }    from "../lib/diamond-pau/src/facets/spark-vault/ISparkVaultFacet.sol";
+import { ISuperstateFacet }    from "../lib/diamond-pau/src/facets/superstate/ISuperstateFacet.sol";
+import { ITransferAssetFacet } from "../lib/diamond-pau/src/facets/transfer-asset/ITransferAssetFacet.sol";
+import { IUniswapV3Facet }     from "../lib/diamond-pau/src/facets/uniswap-v3/IUniswapV3Facet.sol";
+import { IUniswapV4Facet }     from "../lib/diamond-pau/src/facets/uniswap-v4/IUniswapV4Facet.sol";
+import { IUSDSFacet }          from "../lib/diamond-pau/src/facets/usds/IUSDSFacet.sol";
+import { IWEETHFacet }         from "../lib/diamond-pau/src/facets/weeth/IWEETHFacet.sol";
+import { IWrapProxyETHFacet }  from "../lib/diamond-pau/src/facets/wrap-proxy-eth/IWrapProxyETHFacet.sol";
+import { IWSTETHFacet }        from "../lib/diamond-pau/src/facets/wsteth/IWSTETHFacet.sol";
 
-import { IEnumerableIntegrations } from "../../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
+import { IEnumerableIntegrations } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
 
-import { Beacon } from "../../lib/diamond-pau/src/Beacon.sol";
+import { IMainnetControllerFull } from "../lib/diamond-pau/test/interfaces/IMainnetControllerFull.sol";
 
-import { IMainnetControllerFull } from "../../lib/diamond-pau/test/interfaces/IMainnetControllerFull.sol";
+import { Beacon } from "../lib/diamond-pau/src/Beacon.sol";
 
-contract DeployMainnetFacets is Script {
+contract DeployBeaconAndFacetsMainnet is Script {
 
     using stdJson for string;
 
@@ -133,18 +133,40 @@ contract DeployMainnetFacets is Script {
         vm.setEnv("FOUNDRY_ROOT_CHAINID",             vm.toString(block.chainid));
         vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", "true");
 
-        string memory fileSlug = string(abi.encodePacked("facets-mainnet-", env));
+        string memory fileSlug = string(abi.encodePacked("beacon-and-facets-mainnet-", env));
         string memory config   = ScriptTools.loadConfig(fileSlug);
 
-        beacon = Beacon(config.readAddress(".beacon"));
+        address admin = config.readAddress(".admin");
 
-        console.log("Deploying PAU facets...\n  Chain: Mainnet\n  Env: %s", env);
+        console.log("Deploying PAU beacon + facets...\n  Chain: Mainnet\n  Env: %s", env);
 
         vm.startBroadcast();
 
+        address deployer = msg.sender;
+
+        require(deployer != admin, "DeployBeaconAndFacetsMainnet/deployer-must-differ-from-admin");
+
+        // Step 1: deploy Beacon with deployer as temporary admin so this script can wire facets.
+
+        beacon = new Beacon(deployer);
+
+        console.log("PAU beacon deployed at: ", address(beacon));
+
+        // Step 2: deploy each facet and wire it through beacon.setIntegration.
         MainnetFacetAddresses memory facets = _deployAndWireFacets();
 
+        // Step 3: Grant admin role to final admin, then revoke deployer.
+        
+        beacon.grantRole(beacon.DEFAULT_ADMIN_ROLE(),  admin);
+        beacon.revokeRole(beacon.DEFAULT_ADMIN_ROLE(), deployer);
+
+        console.log("Beacon admin transferred to: ", admin);
+
         vm.stopBroadcast();
+
+        // Step 4: export addresses.
+
+        ScriptTools.exportContract(fileSlug, "beacon", address(beacon));
 
         _exportFacets(facets, fileSlug);
     }

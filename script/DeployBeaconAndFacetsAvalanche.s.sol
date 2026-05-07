@@ -1,23 +1,23 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.8.34;
 
-import { Script, stdJson, console } from "../../lib/forge-std/src/Script.sol";
+import { Script, stdJson, console } from "../lib/forge-std/src/Script.sol";
 
-import { ScriptTools } from "../../lib/dss-test/src/ScriptTools.sol";
+import { ScriptTools } from "../lib/dss-test/src/ScriptTools.sol";
 
-import { CentrifugeFacet } from "../../lib/diamond-pau/src/facets/centrifuge/CentrifugeFacet.sol";
-import { ERC7540Facet }    from "../../lib/diamond-pau/src/facets/erc7540/ERC7540Facet.sol";
+import { CentrifugeFacet } from "../lib/diamond-pau/src/facets/centrifuge/CentrifugeFacet.sol";
+import { ERC7540Facet }    from "../lib/diamond-pau/src/facets/erc7540/ERC7540Facet.sol";
 
-import { ICentrifugeFacet } from "../../lib/diamond-pau/src/facets/centrifuge/ICentrifugeFacet.sol";
-import { IERC7540Facet }    from "../../lib/diamond-pau/src/facets/erc7540/IERC7540Facet.sol";
+import { ICentrifugeFacet } from "../lib/diamond-pau/src/facets/centrifuge/ICentrifugeFacet.sol";
+import { IERC7540Facet }    from "../lib/diamond-pau/src/facets/erc7540/IERC7540Facet.sol";
 
-import { IEnumerableIntegrations } from "../../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
+import { IEnumerableIntegrations } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
 
-import { Beacon } from "../../lib/diamond-pau/src/Beacon.sol";
+import { IForeignControllerFull } from "../lib/diamond-pau/test/interfaces/IForeignControllerFull.sol";
 
-import { IForeignControllerFull } from "../../lib/diamond-pau/test/interfaces/IForeignControllerFull.sol";
+import { Beacon } from "../lib/diamond-pau/src/Beacon.sol";
 
-contract DeployAvalancheFacets is Script {
+contract DeployBeaconAndFacetsAvalanche is Script {
 
     using stdJson for string;
 
@@ -48,18 +48,40 @@ contract DeployAvalancheFacets is Script {
         vm.setEnv("FOUNDRY_ROOT_CHAINID",             vm.toString(block.chainid));
         vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", "true");
 
-        string memory fileSlug = string(abi.encodePacked("facets-avalanche-", env));
+        string memory fileSlug = string(abi.encodePacked("beacon-and-facets-avalanche-", env));
         string memory config   = ScriptTools.loadConfig(fileSlug);
 
-        beacon = Beacon(config.readAddress(".beacon"));
+        address admin = config.readAddress(".admin");
 
-        console.log("Deploying PAU facets...\n  Chain: Avalanche\n  Env: %s", env);
+        console.log("Deploying PAU beacon + facets...\n  Chain: Avalanche\n  Env: %s", env);
 
         vm.startBroadcast();
 
+        address deployer = msg.sender;
+
+        require(deployer != admin, "DeployBeaconAndFacetsAvalanche/deployer-must-differ-from-admin");
+
+        // Step 1: deploy Beacon with deployer as TEMPORARY admin so this script can wire facets.
+
+        beacon = new Beacon(deployer);
+
+        console.log("PAU beacon deployed at: ", address(beacon));
+
+        // Step 2: deploy each facet and wire it through beacon.setIntegration.
         AvalancheFacetAddresses memory facets = _deployAndWireFacets();
 
+        // Step 3: Grant admin role to final admin, then revoke deployer.
+
+        beacon.grantRole(beacon.DEFAULT_ADMIN_ROLE(),  admin);
+        beacon.revokeRole(beacon.DEFAULT_ADMIN_ROLE(), deployer);
+
+        console.log("Beacon admin transferred to: ", admin);
+
         vm.stopBroadcast();
+
+        // Step 4: export addresses.
+
+        ScriptTools.exportContract(fileSlug, "beacon", address(beacon));
 
         _exportFacets(facets, fileSlug);
     }

@@ -1,0 +1,5 @@
+{
+    "_info": "admin: PAU beacon final admin (authority for setIntegration / removeIntegration).",
+
+    "admin": "0x0000000000000000000000000000000000000000"
+}

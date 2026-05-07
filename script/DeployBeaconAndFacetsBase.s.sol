@@ -1,40 +1,40 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.8.34;
 
-import { Script, stdJson, console } from "../../lib/forge-std/src/Script.sol";
+import { Script, stdJson, console } from "../lib/forge-std/src/Script.sol";
 
-import { ScriptTools } from "../../lib/dss-test/src/ScriptTools.sol";
+import { ScriptTools } from "../lib/dss-test/src/ScriptTools.sol";
 
-import { Base }                  from "../../lib/diamond-pau/lib/spark-address-registry/src/Base.sol";
-import { Base as GroveBase }     from "../../lib/diamond-pau/lib/grove-address-registry/src/Base.sol";
+import { Base }              from "../lib/diamond-pau/lib/spark-address-registry/src/Base.sol";
+import { Base as GroveBase } from "../lib/diamond-pau/lib/grove-address-registry/src/Base.sol";
 
-import { AaveFacet }          from "../../lib/diamond-pau/src/facets/aave/AaveFacet.sol";
-import { CurveFacet }         from "../../lib/diamond-pau/src/facets/curve/CurveFacet.sol";
-import { ERC4626Facet }       from "../../lib/diamond-pau/src/facets/erc4626/ERC4626Facet.sol";
-import { MerklFacet }         from "../../lib/diamond-pau/src/facets/merkl/MerklFacet.sol";
-import { PendleFacet }        from "../../lib/diamond-pau/src/facets/pendle/PendleFacet.sol";
-import { PSM3Facet }          from "../../lib/diamond-pau/src/facets/psm3/PSM3Facet.sol";
-import { SparkVaultFacet }    from "../../lib/diamond-pau/src/facets/spark-vault/SparkVaultFacet.sol";
-import { TransferAssetFacet } from "../../lib/diamond-pau/src/facets/transfer-asset/TransferAssetFacet.sol";
-import { UniswapV3Facet }     from "../../lib/diamond-pau/src/facets/uniswap-v3/UniswapV3Facet.sol";
+import { AaveFacet }          from "../lib/diamond-pau/src/facets/aave/AaveFacet.sol";
+import { CurveFacet }         from "../lib/diamond-pau/src/facets/curve/CurveFacet.sol";
+import { ERC4626Facet }       from "../lib/diamond-pau/src/facets/erc4626/ERC4626Facet.sol";
+import { MerklFacet }         from "../lib/diamond-pau/src/facets/merkl/MerklFacet.sol";
+import { PendleFacet }        from "../lib/diamond-pau/src/facets/pendle/PendleFacet.sol";
+import { PSM3Facet }          from "../lib/diamond-pau/src/facets/psm3/PSM3Facet.sol";
+import { SparkVaultFacet }    from "../lib/diamond-pau/src/facets/spark-vault/SparkVaultFacet.sol";
+import { TransferAssetFacet } from "../lib/diamond-pau/src/facets/transfer-asset/TransferAssetFacet.sol";
+import { UniswapV3Facet }     from "../lib/diamond-pau/src/facets/uniswap-v3/UniswapV3Facet.sol";
 
-import { IAaveFacet }          from "../../lib/diamond-pau/src/facets/aave/IAaveFacet.sol";
-import { ICurveFacet }         from "../../lib/diamond-pau/src/facets/curve/ICurveFacet.sol";
-import { IERC4626Facet }       from "../../lib/diamond-pau/src/facets/erc4626/IERC4626Facet.sol";
-import { IMerklFacet }         from "../../lib/diamond-pau/src/facets/merkl/IMerklFacet.sol";
-import { IPendleFacet }        from "../../lib/diamond-pau/src/facets/pendle/IPendleFacet.sol";
-import { IPSM3Facet }          from "../../lib/diamond-pau/src/facets/psm3/IPSM3Facet.sol";
-import { ISparkVaultFacet }    from "../../lib/diamond-pau/src/facets/spark-vault/ISparkVaultFacet.sol";
-import { ITransferAssetFacet } from "../../lib/diamond-pau/src/facets/transfer-asset/ITransferAssetFacet.sol";
-import { IUniswapV3Facet }     from "../../lib/diamond-pau/src/facets/uniswap-v3/IUniswapV3Facet.sol";
+import { IAaveFacet }          from "../lib/diamond-pau/src/facets/aave/IAaveFacet.sol";
+import { ICurveFacet }         from "../lib/diamond-pau/src/facets/curve/ICurveFacet.sol";
+import { IERC4626Facet }       from "../lib/diamond-pau/src/facets/erc4626/IERC4626Facet.sol";
+import { IMerklFacet }         from "../lib/diamond-pau/src/facets/merkl/IMerklFacet.sol";
+import { IPendleFacet }        from "../lib/diamond-pau/src/facets/pendle/IPendleFacet.sol";
+import { IPSM3Facet }          from "../lib/diamond-pau/src/facets/psm3/IPSM3Facet.sol";
+import { ISparkVaultFacet }    from "../lib/diamond-pau/src/facets/spark-vault/ISparkVaultFacet.sol";
+import { ITransferAssetFacet } from "../lib/diamond-pau/src/facets/transfer-asset/ITransferAssetFacet.sol";
+import { IUniswapV3Facet }     from "../lib/diamond-pau/src/facets/uniswap-v3/IUniswapV3Facet.sol";
 
-import { IEnumerableIntegrations } from "../../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
+import { IEnumerableIntegrations } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
 
-import { Beacon } from "../../lib/diamond-pau/src/Beacon.sol";
+import { Beacon } from "../lib/diamond-pau/src/Beacon.sol";
 
-import { IForeignControllerFull } from "../../lib/diamond-pau/test/interfaces/IForeignControllerFull.sol";
+import { IForeignControllerFull } from "../lib/diamond-pau/test/interfaces/IForeignControllerFull.sol";
 
-contract DeployBaseFacets is Script {
+contract DeployBeaconAndFacetsBase is Script {
 
     using stdJson for string;
 
@@ -80,18 +80,40 @@ contract DeployBaseFacets is Script {
         vm.setEnv("FOUNDRY_ROOT_CHAINID",             vm.toString(block.chainid));
         vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", "true");
 
-        string memory fileSlug = string(abi.encodePacked("facets-base-", env));
+        string memory fileSlug = string(abi.encodePacked("beacon-and-facets-base-", env));
         string memory config   = ScriptTools.loadConfig(fileSlug);
 
-        beacon = Beacon(config.readAddress(".beacon"));
+        address admin = config.readAddress(".admin");
 
-        console.log("Deploying PAU facets...\n  Chain: Base\n  Env: %s", env);
+        console.log("Deploying PAU beacon + facets...\n  Chain: Base\n  Env: %s", env);
 
         vm.startBroadcast();
 
+        address deployer = msg.sender;
+
+        require(deployer != admin, "DeployBeaconAndFacetsBase/deployer-must-differ-from-admin");
+
+        // Step 1: deploy Beacon with deployer as TEMPORARY admin so this script can wire facets.
+
+        beacon = new Beacon(deployer);
+
+        console.log("PAU beacon deployed at: ", address(beacon));
+
+        // Step 2: deploy each facet and wire it through beacon.setIntegration.
         BaseFacetAddresses memory facets = _deployAndWireFacets();
 
+        // Step 3: Grant admin role to final admin, then revoke deployer.
+
+        beacon.grantRole(beacon.DEFAULT_ADMIN_ROLE(),  admin);
+        beacon.revokeRole(beacon.DEFAULT_ADMIN_ROLE(), deployer);
+
+        console.log("Beacon admin transferred to: ", admin);
+
         vm.stopBroadcast();
+
+        // Step 4: export addresses.
+
+        ScriptTools.exportContract(fileSlug, "beacon", address(beacon));
 
         _exportFacets(facets, fileSlug);
     }
