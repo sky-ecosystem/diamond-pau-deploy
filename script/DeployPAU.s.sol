@@ -15,8 +15,8 @@ contract DeployPAU is Script {
 
     using stdJson for string;
 
-    bytes32 constant ALLOCATOR_ROLE = keccak256("ALLOCATOR_ROLE");
-    bytes32 constant FREEZER_ROLE   = keccak256("FREEZER_ROLE");
+    bytes32 constant ALLOCATOR_ROLE       = keccak256("ALLOCATOR_ROLE");
+    bytes32 constant ALLOCATOR_ADMIN_ROLE = keccak256("ALLOCATOR_ADMIN_ROLE");
 
     function run() external {
         string memory chain = vm.envOr("CHAIN", string("mainnet"));
@@ -30,10 +30,10 @@ contract DeployPAU is Script {
         string memory fileSlug = string(abi.encodePacked("pau-", chain, "-", env));
         string memory config   = ScriptTools.loadConfig(fileSlug);
 
-        address admin      = config.readAddress(".admin");
-        address allocator  = config.readAddress(".allocator");
-        address freezer    = config.readAddress(".freezer");
-        address pauFactory = config.readAddress(".pauFactory");
+        address admin          = config.readAddress(".admin");
+        address allocator      = config.readAddress(".allocator");
+        address allocatorAdmin = config.readAddress(".allocatorAdmin");
+        address pauFactory     = config.readAddress(".pauFactory");
 
         console.log("Deploying PAU system...\n  Chain: %s\n  Env: %s", chain, env);
 
@@ -53,12 +53,12 @@ contract DeployPAU is Script {
         ALMProxy       almProxy       = ALMProxy(payable(controller.proxy()));
         RateLimits     rateLimits     = RateLimits(controller.rateLimits());
 
-        // Step 2: Grant roles to relayer and freezer on AccessControls
+        // Step 2: Grant roles to allocator and allocatorAdmin on AccessControls
 
-        accessControls.grantRole(ALLOCATOR_ROLE, allocator);
-        accessControls.grantRole(FREEZER_ROLE,   freezer);
+        accessControls.grantRole(ALLOCATOR_ROLE,       allocator);
+        accessControls.grantRole(ALLOCATOR_ADMIN_ROLE, allocatorAdmin);
 
-        accessControls.setRoleRevoker(ALLOCATOR_ROLE, FREEZER_ROLE);
+        accessControls.setRoleAdmin(ALLOCATOR_ROLE, ALLOCATOR_ADMIN_ROLE);
 
         // Step 3: Transfer DEFAULT_ADMIN_ROLE to final admin and revoke from deployer.
         //         For AccessControls, ALMProxy, and RateLimits.
