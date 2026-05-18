@@ -6,10 +6,10 @@ import { VmSafe } from "../lib/forge-std/src/Vm.sol";
 
 abstract contract PostDeployTestBase is Test {
 
-    bytes32 internal constant DEFAULT_ADMIN_ROLE = 0x00;
-    bytes32 internal constant ALLOCATOR_ROLE     = keccak256("ALLOCATOR_ROLE");
-    bytes32 internal constant FREEZER_ROLE       = keccak256("FREEZER_ROLE");
-    bytes32 internal constant CONTROLLER_ROLE    = keccak256("CONTROLLER");
+    bytes32 internal constant DEFAULT_ADMIN_ROLE   = 0x00;
+    bytes32 internal constant ALLOCATOR_ROLE       = keccak256("ALLOCATOR_ROLE");
+    bytes32 internal constant ALLOCATOR_ADMIN_ROLE = keccak256("ALLOCATOR_ADMIN_ROLE");
+    bytes32 internal constant CONTROLLER_ROLE      = keccak256("CONTROLLER");
 
     /**********************************************************************************************/
     /*** Get events helpers                                                                     ***/

@@ -21,10 +21,10 @@ contract PostDeployPAUTests is PostDeployTestBase {
     address internal constant ACCESS_CONTROLS = 0x0000000000000000000000000000000000000000;
     address internal constant ADMIN           = 0x0000000000000000000000000000000000000000;
     address internal constant ALLOCATOR       = 0x0000000000000000000000000000000000000000;
+    address internal constant ALLOCATOR_ADMIN = 0x0000000000000000000000000000000000000000;
     address internal constant ALM_PROXY       = 0x0000000000000000000000000000000000000000;
     address internal constant CONTROLLER      = 0x0000000000000000000000000000000000000000;
     address internal constant DEPLOYER        = 0x0000000000000000000000000000000000000000;
-    address internal constant FREEZER         = 0x0000000000000000000000000000000000000000;
     address internal constant PAU_FACTORY     = 0x0000000000000000000000000000000000000000;
     address internal constant RATE_LIMITS     = 0x0000000000000000000000000000000000000000;
 
@@ -48,7 +48,7 @@ contract PostDeployPAUTests is PostDeployTestBase {
         return 24684236; // After the PAU deployment block.
     }
 
-    function test_postDeployState() external {
+    function test_postDeployState() external view {
         // Controller initializes with the correct state.
         assertEq(controller.accessControls(), ACCESS_CONTROLS);
         assertEq(controller.beacon(),         factory.beacon());
@@ -63,33 +63,32 @@ contract PostDeployPAUTests is PostDeployTestBase {
         assertEq(rateLimits.hasRole(CONTROLLER_ROLE,    CONTROLLER),  true);
 
         // AccessControls roles
-        assertEq(accessControls.hasRole(ALLOCATOR_ROLE,     ALLOCATOR), true);
-        assertEq(accessControls.hasRole(FREEZER_ROLE,       FREEZER),   true);
-        assertEq(accessControls.hasRole(DEFAULT_ADMIN_ROLE, ADMIN),     true);
+        assertEq(accessControls.hasRole(ALLOCATOR_ROLE,       ALLOCATOR),       true);
+        assertEq(accessControls.hasRole(ALLOCATOR_ADMIN_ROLE, ALLOCATOR_ADMIN), true);
+        assertEq(accessControls.hasRole(DEFAULT_ADMIN_ROLE,   ADMIN),           true);
 
-        assertEq(accessControls.getRoleMemberCount(DEFAULT_ADMIN_ROLE), 1);
-        assertEq(accessControls.getRoleMemberCount(ALLOCATOR_ROLE),     1);
-        assertEq(accessControls.getRoleMemberCount(FREEZER_ROLE),       1);
+        assertEq(accessControls.getRoleMemberCount(DEFAULT_ADMIN_ROLE),   1);
+        assertEq(accessControls.getRoleMemberCount(ALLOCATOR_ROLE),       1);
+        assertEq(accessControls.getRoleMemberCount(ALLOCATOR_ADMIN_ROLE), 1);
 
-        assertEq(accessControls.getRoleAdmin(ALLOCATOR_ROLE),   FREEZER_ROLE); // via setRoleRevoker.
-        assertEq(accessControls.getRoleRevoker(ALLOCATOR_ROLE), FREEZER_ROLE); // via setRoleRevoker.
+        assertEq(accessControls.getRoleAdmin(ALLOCATOR_ROLE), ALLOCATOR_ADMIN_ROLE); // via setRoleAdmin.
 
         // DEPLOYER/Factory has no roles on AccessControls, ALMProxy, or RateLimits.
-        assertEq(accessControls.hasRole(ALLOCATOR_ROLE,     DEPLOYER), false);
-        assertEq(accessControls.hasRole(DEFAULT_ADMIN_ROLE, DEPLOYER), false);
-        assertEq(accessControls.hasRole(FREEZER_ROLE,       DEPLOYER), false);
-        assertEq(almProxy.hasRole(CONTROLLER_ROLE,          DEPLOYER), false);
-        assertEq(almProxy.hasRole(DEFAULT_ADMIN_ROLE,       DEPLOYER), false);
-        assertEq(rateLimits.hasRole(CONTROLLER_ROLE,        DEPLOYER), false);
-        assertEq(rateLimits.hasRole(DEFAULT_ADMIN_ROLE,     DEPLOYER), false);
+        assertEq(accessControls.hasRole(ALLOCATOR_ROLE,       DEPLOYER), false);
+        assertEq(accessControls.hasRole(DEFAULT_ADMIN_ROLE,   DEPLOYER), false);
+        assertEq(accessControls.hasRole(ALLOCATOR_ADMIN_ROLE, DEPLOYER), false);
+        assertEq(almProxy.hasRole(CONTROLLER_ROLE,            DEPLOYER), false);
+        assertEq(almProxy.hasRole(DEFAULT_ADMIN_ROLE,         DEPLOYER), false);
+        assertEq(rateLimits.hasRole(CONTROLLER_ROLE,          DEPLOYER), false);
+        assertEq(rateLimits.hasRole(DEFAULT_ADMIN_ROLE,       DEPLOYER), false);
 
-        assertEq(accessControls.hasRole(ALLOCATOR_ROLE,     PAU_FACTORY), false);
-        assertEq(accessControls.hasRole(DEFAULT_ADMIN_ROLE, PAU_FACTORY), false);
-        assertEq(accessControls.hasRole(FREEZER_ROLE,       PAU_FACTORY), false);
-        assertEq(almProxy.hasRole(CONTROLLER_ROLE,          PAU_FACTORY), false);
-        assertEq(almProxy.hasRole(DEFAULT_ADMIN_ROLE,       PAU_FACTORY), false);
-        assertEq(rateLimits.hasRole(CONTROLLER_ROLE,        PAU_FACTORY), false);
-        assertEq(rateLimits.hasRole(DEFAULT_ADMIN_ROLE,     PAU_FACTORY), false);
+        assertEq(accessControls.hasRole(ALLOCATOR_ROLE,       PAU_FACTORY), false);
+        assertEq(accessControls.hasRole(DEFAULT_ADMIN_ROLE,   PAU_FACTORY), false);
+        assertEq(accessControls.hasRole(ALLOCATOR_ADMIN_ROLE, PAU_FACTORY), false);
+        assertEq(almProxy.hasRole(CONTROLLER_ROLE,            PAU_FACTORY), false);
+        assertEq(almProxy.hasRole(DEFAULT_ADMIN_ROLE,         PAU_FACTORY), false);
+        assertEq(rateLimits.hasRole(CONTROLLER_ROLE,          PAU_FACTORY), false);
+        assertEq(rateLimits.hasRole(DEFAULT_ADMIN_ROLE,       PAU_FACTORY), false);
     }
 
     function test_postDeployEvents() external {
@@ -106,14 +105,14 @@ contract PostDeployPAUTests is PostDeployTestBase {
         assertEq(_toAddress(factoryAllLogs[0].topics[2]), CONTROLLER);
 
         (
-            address accessControls,
-            address almProxy,
-            address rateLimits
+            address accessControls_,
+            address almProxy_,
+            address rateLimits_
         ) = abi.decode(factoryAllLogs[0].data, (address, address, address));
 
-        assertEq(accessControls, ACCESS_CONTROLS);
-        assertEq(almProxy,       ALM_PROXY);
-        assertEq(rateLimits,     RATE_LIMITS);
+        assertEq(accessControls_, ACCESS_CONTROLS);
+        assertEq(almProxy_,       ALM_PROXY);
+        assertEq(rateLimits_,     RATE_LIMITS);
 
 
        /*******************************************************************************************/
@@ -146,18 +145,18 @@ contract PostDeployPAUTests is PostDeployTestBase {
         assertEq(_toAddress(accessControlsAllLogs[1].topics[2]), ALLOCATOR);
         assertEq(_toAddress(accessControlsAllLogs[1].topics[3]), DEPLOYER);
 
-        // RoleGranted(FREEZER_ROLE, FREEZER, DEPLOYER) from DeployPAU.
+        // RoleGranted(ALLOCATOR_ADMIN_ROLE, ALLOCATOR_ADMIN, DEPLOYER) from DeployPAU.
         assertEq(accessControlsAllLogs[2].topics[0],             IAccessControl.RoleGranted.selector);
-        assertEq(accessControlsAllLogs[2].topics[1],             FREEZER_ROLE);
-        assertEq(_toAddress(accessControlsAllLogs[2].topics[2]), FREEZER);
+        assertEq(accessControlsAllLogs[2].topics[1],             ALLOCATOR_ADMIN_ROLE);
+        assertEq(_toAddress(accessControlsAllLogs[2].topics[2]), ALLOCATOR_ADMIN);
         assertEq(_toAddress(accessControlsAllLogs[2].topics[3]), DEPLOYER);
 
-        // RoleAdminChanged(ALLOCATOR_ROLE, DEFAULT_ADMIN_ROLE, FREEZER_ROLE) from DeployPAU.
-        // From AccessControls.setRoleRevoker.
+        // RoleAdminChanged(ALLOCATOR_ROLE, DEFAULT_ADMIN_ROLE, ALLOCATOR_ADMIN_ROLE) from DeployPAU.
+        // From AccessControls.setRoleAdmin.
         assertEq(accessControlsAllLogs[3].topics[0], IAccessControl.RoleAdminChanged.selector);
         assertEq(accessControlsAllLogs[3].topics[1], ALLOCATOR_ROLE);
         assertEq(accessControlsAllLogs[3].topics[2], DEFAULT_ADMIN_ROLE);
-        assertEq(accessControlsAllLogs[3].topics[3], FREEZER_ROLE);
+        assertEq(accessControlsAllLogs[3].topics[3], ALLOCATOR_ADMIN_ROLE);
 
         // RoleGranted(DEFAULT_ADMIN_ROLE, ADMIN, DEPLOYER) from DeployPAU.
         // Role transfers from deployer to admin.
