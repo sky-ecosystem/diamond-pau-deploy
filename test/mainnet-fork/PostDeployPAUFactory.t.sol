@@ -10,8 +10,8 @@ import { PostDeployTestBase } from "../PostDeployTestBase.t.sol";
 contract PostDeployPAUFactoryTests is PostDeployTestBase {
 
     // Paste from script/output/1/pau-factory-mainnet-{env}-latest.json
-    address internal constant BEACON      = 0x0000000000000000000000000000000000000000;
-    address internal constant PAU_FACTORY = 0x0000000000000000000000000000000000000000;
+    address internal constant BEACON      = 0x9EA465978500399C6b4b9A356b14b00e6597e705;
+    address internal constant PAU_FACTORY = 0xabd7925b6a72937FA38F56a2aA466f17BefFEe65;
 
     PAUFactory internal factory;
 
@@ -22,7 +22,7 @@ contract PostDeployPAUFactoryTests is PostDeployTestBase {
     }
 
     function _getBlock() internal pure returns (uint256) {
-        return 24684236; // After the PAUFactory deployment block.
+        return 25143000; // May-21-2026 10:23:47 AM +UTC : After the PAUFactory deployment block.
     }
 
     function test_postDeployState() external {

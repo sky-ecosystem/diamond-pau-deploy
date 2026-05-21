@@ -38,34 +38,34 @@ contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
     address internal constant _UNISWAP_V4_ROUTER           = 0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af;
 
     // Paste from script/output/1/beacon-and-facets-mainnet-{env}-latest.json
-    address internal constant DEPLOYER             = 0x0000000000000000000000000000000000000000;
-    address internal constant ADMIN                = 0x0000000000000000000000000000000000000000;
-    address internal constant BEACON               = 0x0000000000000000000000000000000000000000;
-    address internal constant AAVE_FACET           = 0x0000000000000000000000000000000000000000;
-    address internal constant BASIN_FACET          = 0x0000000000000000000000000000000000000000;
-    address internal constant CCTP_FACET           = 0x0000000000000000000000000000000000000000;
-    address internal constant CENTRIFUGE_FACET     = 0x0000000000000000000000000000000000000000;
-    address internal constant CURVE_FACET          = 0x0000000000000000000000000000000000000000;
-    address internal constant DAIUSDS_FACET        = 0x0000000000000000000000000000000000000000;
-    address internal constant ERC4626_FACET        = 0x0000000000000000000000000000000000000000;
-    address internal constant ERC7540_FACET        = 0x0000000000000000000000000000000000000000;
-    address internal constant ETHENA_FACET         = 0x0000000000000000000000000000000000000000;
-    address internal constant FARM_FACET           = 0x0000000000000000000000000000000000000000;
-    address internal constant LAYER_ZERO_FACET     = 0x0000000000000000000000000000000000000000;
-    address internal constant MAPLE_FACET          = 0x0000000000000000000000000000000000000000;
-    address internal constant MERKL_FACET          = 0x0000000000000000000000000000000000000000;
-    address internal constant OTC_FACET            = 0x0000000000000000000000000000000000000000;
-    address internal constant PENDLE_FACET         = 0x0000000000000000000000000000000000000000;
-    address internal constant PSM_FACET            = 0x0000000000000000000000000000000000000000;
-    address internal constant SPARK_VAULT_FACET    = 0x0000000000000000000000000000000000000000;
-    address internal constant SUPERSTATE_FACET     = 0x0000000000000000000000000000000000000000;
-    address internal constant TRANSFER_ASSET_FACET = 0x0000000000000000000000000000000000000000;
-    address internal constant UNISWAP_V3_FACET     = 0x0000000000000000000000000000000000000000;
-    address internal constant UNISWAP_V4_FACET     = 0x0000000000000000000000000000000000000000;
-    address internal constant USDS_FACET           = 0x0000000000000000000000000000000000000000;
-    address internal constant WEETH_FACET          = 0x0000000000000000000000000000000000000000;
-    address internal constant WRAP_PROXY_ETH_FACET = 0x0000000000000000000000000000000000000000;
-    address internal constant WSTETH_FACET         = 0x0000000000000000000000000000000000000000;
+    address internal constant DEPLOYER             = 0x1ca4ECaF0E13ca833c80dA835DEEa15e1684361d;
+    address internal constant ADMIN                = 0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB;
+    address internal constant BEACON               = 0x9EA465978500399C6b4b9A356b14b00e6597e705;
+    address internal constant AAVE_FACET           = 0x61714DcB2A00a2A38E8244BeaeaDC041611aFcdF;
+    address internal constant BASIN_FACET          = 0x153A215BE3f11Cff096C5a1A58A6f6BD83E73FAC;
+    address internal constant CCTP_FACET           = 0x2cDF2BD533ba084007aCC66406B556286f8782dF;
+    address internal constant CENTRIFUGE_FACET     = 0x9092DDf907d18576F993ea464E1a5a0dc55140f7;
+    address internal constant CURVE_FACET          = 0x31213EaD1DcD25B1977C6B632024b2377Dad32bB;
+    address internal constant DAIUSDS_FACET        = 0xB1361F17c79FfDC42FD5fd45e0E2D37EbD80EB6f;
+    address internal constant ERC4626_FACET        = 0x71a1062177F16676F6c8cF7d07272Bb25686270A;
+    address internal constant ERC7540_FACET        = 0x65547FE981fb68773BFE861b23F6F6Da005874a0;
+    address internal constant ETHENA_FACET         = 0x43eDc8cBa1dBFa58D4c8A300e82B1BFF4A10efB0;
+    address internal constant FARM_FACET           = 0x07C22b9dd9F0E8eebfFC5107D3f0E2676Db0A013;
+    address internal constant LAYER_ZERO_FACET     = 0x949079D84C55eCe64F26Bca254977962Da877928;
+    address internal constant MAPLE_FACET          = 0xE10740731F7226A009D0Be6ED860FB31A9e1bb59;
+    address internal constant MERKL_FACET          = 0x14638015871067437061B1A393eCA15E5BE6C4fD;
+    address internal constant OTC_FACET            = 0x563ee89E22Cb8E1F0e364E0ae2973c09907eC11d;
+    address internal constant PENDLE_FACET         = 0x85F7D11bb9fea7142957191d4992c434cB0eD331;
+    address internal constant PSM_FACET            = 0x8dC7DfCdA40477Bc35aF019D5AB01478aEAc8f66;
+    address internal constant SPARK_VAULT_FACET    = 0xc365215f8905D20B44263e4C23a7833Ccb806226;
+    address internal constant SUPERSTATE_FACET     = 0xB614C6d9ACAE36f34C9f72DFD93D07C8026e2F33;
+    address internal constant TRANSFER_ASSET_FACET = 0xc0d7BDd0083bC455aA1dc1c0cF8d1823784AB71e;
+    address internal constant UNISWAP_V3_FACET     = 0x8B1655A554bfBEc6E8819c2320EbB2401F27a7be;
+    address internal constant UNISWAP_V4_FACET     = 0xadA8c8Ae2b67eDA93629C52861b1E5A63B2F074D;
+    address internal constant USDS_FACET           = 0xFfB81cF70ca108CbbE88FA9CAAeb7aeEE5612509;
+    address internal constant WEETH_FACET          = 0x6913876B5c9a00bA1c028eC477D07B304e8aa0c8;
+    address internal constant WRAP_PROXY_ETH_FACET = 0xdB160C7ad167F7408e8F55D73562D1E30a058154;
+    address internal constant WSTETH_FACET         = 0x2E1Fc6700783D0014d08DCd4A38A01D376318A4a;
 
     Beacon internal beacon;
 
@@ -76,10 +76,10 @@ contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
     }
 
     function _getBlock() internal pure returns (uint256) {
-        return 24684236; // After the BeaconAndFacets deployment block.
+        return 25143000; // May-21-2026 10:23:47 AM +UTC : After the BeaconAndFacets deployment block.
     }
 
-    function test_postDeployState_beacon() external {
+    function test_postDeployState_beacon() external view {
         // Final admin holds the role; deployer was revoked in the script.
         assertEq(beacon.hasRole(DEFAULT_ADMIN_ROLE, ADMIN),    true);
         assertEq(beacon.hasRole(DEFAULT_ADMIN_ROLE, DEPLOYER), false);
@@ -90,7 +90,7 @@ contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
         assertEq(beacon.supportsInterface(type(IBeacon).interfaceId), true);
     }
 
-    function test_postDeployState_facetConstructorArgs() external {
+    function test_postDeployState_facetConstructorArgs() external view {
         // CCTPFacet constructor args.
         assertEq(ICCTPFacet(CCTP_FACET).cctp(), Ethereum.CCTP_TOKEN_MESSENGER);
         assertEq(ICCTPFacet(CCTP_FACET).usdc(), Ethereum.USDC);
@@ -145,34 +145,34 @@ contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
         assertEq(IWSTETHFacet(WSTETH_FACET).wsteth(),        Ethereum.WSTETH);
     }
 
-    function test_postDeployState_facetIntegrations() external {
+    function test_postDeployState_facetIntegrations() external view {
         assertEq(beacon.integrations().length, 25);
 
-        _assertIntegration("AAVE_FACET",           AAVE_FACET,           6);
-        _assertIntegration("BASIN_FACET",          BASIN_FACET,          4);
-        _assertIntegration("CCTP_FACET",           CCTP_FACET,           8);
-        _assertIntegration("CENTRIFUGE_FACET",     CENTRIFUGE_FACET,     12);
-        _assertIntegration("CURVE_FACET",          CURVE_FACET,          9);
-        _assertIntegration("DAIUSDS_FACET",        DAIUSDS_FACET,        2);
-        _assertIntegration("ERC4626_FACET",        ERC4626_FACET,        8);
-        _assertIntegration("ERC7540_FACET",        ERC7540_FACET,        8);
-        _assertIntegration("ETHENA_FACET",         ETHENA_FACET,         13);
-        _assertIntegration("FARM_FACET",           FARM_FACET,           6);
-        _assertIntegration("LAYER_ZERO_FACET",     LAYER_ZERO_FACET,     4);
-        _assertIntegration("MAPLE_FACET",          MAPLE_FACET,          4);
-        _assertIntegration("MERKL_FACET",          MERKL_FACET,          2);
+        _assertIntegration("AAVE_FACET",           AAVE_FACET,           7);
+        _assertIntegration("BASIN_FACET",          BASIN_FACET,          5);
+        _assertIntegration("CCTP_FACET",           CCTP_FACET,           10);
+        _assertIntegration("CENTRIFUGE_FACET",     CENTRIFUGE_FACET,     14);
+        _assertIntegration("CURVE_FACET",          CURVE_FACET,          11);
+        _assertIntegration("DAIUSDS_FACET",        DAIUSDS_FACET,        8);
+        _assertIntegration("ERC4626_FACET",        ERC4626_FACET,        9);
+        _assertIntegration("ERC7540_FACET",        ERC7540_FACET,        9);
+        _assertIntegration("ETHENA_FACET",         ETHENA_FACET,         18);
+        _assertIntegration("FARM_FACET",           FARM_FACET,           7);
+        _assertIntegration("LAYER_ZERO_FACET",     LAYER_ZERO_FACET,     6);
+        _assertIntegration("MAPLE_FACET",          MAPLE_FACET,          5);
+        _assertIntegration("MERKL_FACET",          MERKL_FACET,          3);
         _assertIntegration("OTC_FACET",            OTC_FACET,            14);
-        _assertIntegration("PENDLE_FACET",         PENDLE_FACET,         2);
-        _assertIntegration("PSM_FACET",            PSM_FACET,            4);
-        _assertIntegration("SPARK_VAULT_FACET",    SPARK_VAULT_FACET,    2);
-        _assertIntegration("SUPERSTATE_FACET",     SUPERSTATE_FACET,     2);
-        _assertIntegration("TRANSFER_ASSET_FACET", TRANSFER_ASSET_FACET, 2);
-        _assertIntegration("UNISWAP_V3_FACET",     UNISWAP_V3_FACET,     16);
-        _assertIntegration("UNISWAP_V4_FACET",     UNISWAP_V4_FACET,     12);
-        _assertIntegration("USDS_FACET",           USDS_FACET,           6);
-        _assertIntegration("WEETH_FACET",          WEETH_FACET,          6);
-        _assertIntegration("WRAP_PROXY_ETH_FACET", WRAP_PROXY_ETH_FACET, 2);
-        _assertIntegration("WSTETH_FACET",         WSTETH_FACET,         6);
+        _assertIntegration("PENDLE_FACET",         PENDLE_FACET,         4);
+        _assertIntegration("PSM_FACET",            PSM_FACET,            11);
+        _assertIntegration("SPARK_VAULT_FACET",    SPARK_VAULT_FACET,    3);
+        _assertIntegration("SUPERSTATE_FACET",     SUPERSTATE_FACET,     5);
+        _assertIntegration("TRANSFER_ASSET_FACET", TRANSFER_ASSET_FACET, 3);
+        _assertIntegration("UNISWAP_V3_FACET",     UNISWAP_V3_FACET,     23);
+        _assertIntegration("UNISWAP_V4_FACET",     UNISWAP_V4_FACET,     17);
+        _assertIntegration("USDS_FACET",           USDS_FACET,           8);
+        _assertIntegration("WEETH_FACET",          WEETH_FACET,          9);
+        _assertIntegration("WRAP_PROXY_ETH_FACET", WRAP_PROXY_ETH_FACET, 4);
+        _assertIntegration("WSTETH_FACET",         WSTETH_FACET,         10);
     }
 
     function test_postDeployEvents() external {
@@ -189,31 +189,31 @@ contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
         assertEq(_toAddress(allLogs[0].topics[3]), DEPLOYER);
 
         // [1..25] IntegrationSet x 25, in deploy-script order.
-        _assertIntegrationSetLog(allLogs[1],  "AAVE_FACET",           AAVE_FACET,           6);
-        _assertIntegrationSetLog(allLogs[2],  "BASIN_FACET",          BASIN_FACET,          4);
-        _assertIntegrationSetLog(allLogs[3],  "CCTP_FACET",           CCTP_FACET,           8);
-        _assertIntegrationSetLog(allLogs[4],  "CENTRIFUGE_FACET",     CENTRIFUGE_FACET,     12);
-        _assertIntegrationSetLog(allLogs[5],  "CURVE_FACET",          CURVE_FACET,          9);
-        _assertIntegrationSetLog(allLogs[6],  "DAIUSDS_FACET",        DAIUSDS_FACET,        2);
-        _assertIntegrationSetLog(allLogs[7],  "ERC4626_FACET",        ERC4626_FACET,        8);
-        _assertIntegrationSetLog(allLogs[8],  "ERC7540_FACET",        ERC7540_FACET,        8);
-        _assertIntegrationSetLog(allLogs[9],  "ETHENA_FACET",         ETHENA_FACET,         13);
-        _assertIntegrationSetLog(allLogs[10], "FARM_FACET",           FARM_FACET,           6);
-        _assertIntegrationSetLog(allLogs[11], "LAYER_ZERO_FACET",     LAYER_ZERO_FACET,     4);
-        _assertIntegrationSetLog(allLogs[12], "MAPLE_FACET",          MAPLE_FACET,          4);
-        _assertIntegrationSetLog(allLogs[13], "MERKL_FACET",          MERKL_FACET,          2);
+        _assertIntegrationSetLog(allLogs[1],  "AAVE_FACET",           AAVE_FACET,           7);
+        _assertIntegrationSetLog(allLogs[2],  "BASIN_FACET",          BASIN_FACET,          5);
+        _assertIntegrationSetLog(allLogs[3],  "CCTP_FACET",           CCTP_FACET,           10);
+        _assertIntegrationSetLog(allLogs[4],  "CENTRIFUGE_FACET",     CENTRIFUGE_FACET,     14);
+        _assertIntegrationSetLog(allLogs[5],  "CURVE_FACET",          CURVE_FACET,          11);
+        _assertIntegrationSetLog(allLogs[6],  "DAIUSDS_FACET",        DAIUSDS_FACET,        8);
+        _assertIntegrationSetLog(allLogs[7],  "ERC4626_FACET",        ERC4626_FACET,        9);
+        _assertIntegrationSetLog(allLogs[8],  "ERC7540_FACET",        ERC7540_FACET,        9);
+        _assertIntegrationSetLog(allLogs[9],  "ETHENA_FACET",         ETHENA_FACET,         18);
+        _assertIntegrationSetLog(allLogs[10], "FARM_FACET",           FARM_FACET,           7);
+        _assertIntegrationSetLog(allLogs[11], "LAYER_ZERO_FACET",     LAYER_ZERO_FACET,     6);
+        _assertIntegrationSetLog(allLogs[12], "MAPLE_FACET",          MAPLE_FACET,          5);
+        _assertIntegrationSetLog(allLogs[13], "MERKL_FACET",          MERKL_FACET,          3);
         _assertIntegrationSetLog(allLogs[14], "OTC_FACET",            OTC_FACET,            14);
-        _assertIntegrationSetLog(allLogs[15], "PENDLE_FACET",         PENDLE_FACET,         2);
-        _assertIntegrationSetLog(allLogs[16], "PSM_FACET",            PSM_FACET,            4);
-        _assertIntegrationSetLog(allLogs[17], "SPARK_VAULT_FACET",    SPARK_VAULT_FACET,    2);
-        _assertIntegrationSetLog(allLogs[18], "SUPERSTATE_FACET",     SUPERSTATE_FACET,     2);
-        _assertIntegrationSetLog(allLogs[19], "TRANSFER_ASSET_FACET", TRANSFER_ASSET_FACET, 2);
-        _assertIntegrationSetLog(allLogs[20], "UNISWAP_V3_FACET",     UNISWAP_V3_FACET,     16);
-        _assertIntegrationSetLog(allLogs[21], "UNISWAP_V4_FACET",     UNISWAP_V4_FACET,     12);
-        _assertIntegrationSetLog(allLogs[22], "USDS_FACET",           USDS_FACET,           6);
-        _assertIntegrationSetLog(allLogs[23], "WEETH_FACET",          WEETH_FACET,          6);
-        _assertIntegrationSetLog(allLogs[24], "WRAP_PROXY_ETH_FACET", WRAP_PROXY_ETH_FACET, 2);
-        _assertIntegrationSetLog(allLogs[25], "WSTETH_FACET",         WSTETH_FACET,         6);
+        _assertIntegrationSetLog(allLogs[15], "PENDLE_FACET",         PENDLE_FACET,         4);
+        _assertIntegrationSetLog(allLogs[16], "PSM_FACET",            PSM_FACET,            11);
+        _assertIntegrationSetLog(allLogs[17], "SPARK_VAULT_FACET",    SPARK_VAULT_FACET,    3);
+        _assertIntegrationSetLog(allLogs[18], "SUPERSTATE_FACET",     SUPERSTATE_FACET,     5);
+        _assertIntegrationSetLog(allLogs[19], "TRANSFER_ASSET_FACET", TRANSFER_ASSET_FACET, 3);
+        _assertIntegrationSetLog(allLogs[20], "UNISWAP_V3_FACET",     UNISWAP_V3_FACET,     23);
+        _assertIntegrationSetLog(allLogs[21], "UNISWAP_V4_FACET",     UNISWAP_V4_FACET,     17);
+        _assertIntegrationSetLog(allLogs[22], "USDS_FACET",           USDS_FACET,           8);
+        _assertIntegrationSetLog(allLogs[23], "WEETH_FACET",          WEETH_FACET,          9);
+        _assertIntegrationSetLog(allLogs[24], "WRAP_PROXY_ETH_FACET", WRAP_PROXY_ETH_FACET, 4);
+        _assertIntegrationSetLog(allLogs[25], "WSTETH_FACET",         WSTETH_FACET,         10);
 
         // [26] Admin transfer: RoleGranted(DEFAULT_ADMIN_ROLE, ADMIN, DEPLOYER)
         assertEq(allLogs[26].topics[0],             IAccessControl.RoleGranted.selector);
