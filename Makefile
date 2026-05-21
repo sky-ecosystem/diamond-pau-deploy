@@ -27,11 +27,11 @@ clean:
 test-postdeploy-mainnet:
 	forge test --match-path "test/mainnet-fork/PostDeploy*" -vvv
 
-test-postdeploy-base:
-	forge test --match-path "test/base-fork/PostDeploy*" -vvv
+# test-postdeploy-base:
+# 	forge test --match-path "test/base-fork/PostDeploy*" -vvv
 
-test-postdeploy-avalanche:
-	forge test --match-path "test/avalanche-fork/PostDeploy*" -vvv
+# test-postdeploy-avalanche:
+# 	forge test --match-path "test/avalanche-fork/PostDeploy*" -vvv
 
 # --------------------------------------------------------------------------------------------------
 # Deploy: Beacon + Facets                                                                          #
@@ -55,23 +55,23 @@ deploy-beacon-and-facets-mainnet-staging:
 
 # Base
 
-deploy-beacon-and-facets-base-production:
-	ENV=production forge script script/DeployBeaconAndFacetsBase.s.sol:DeployBeaconAndFacetsBase \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
+# deploy-beacon-and-facets-base-production:
+# 	ENV=production forge script script/DeployBeaconAndFacetsBase.s.sol:DeployBeaconAndFacetsBase \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
 
-deploy-beacon-and-facets-base-staging:
-	ENV=staging forge script script/DeployBeaconAndFacetsBase.s.sol:DeployBeaconAndFacetsBase \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
+# deploy-beacon-and-facets-base-staging:
+# 	ENV=staging forge script script/DeployBeaconAndFacetsBase.s.sol:DeployBeaconAndFacetsBase \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
 
 # Avalanche
 
-deploy-beacon-and-facets-avalanche-production:
-	ENV=production forge script script/DeployBeaconAndFacetsAvalanche.s.sol:DeployBeaconAndFacetsAvalanche \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
+# deploy-beacon-and-facets-avalanche-production:
+# 	ENV=production forge script script/DeployBeaconAndFacetsAvalanche.s.sol:DeployBeaconAndFacetsAvalanche \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
 
-deploy-beacon-and-facets-avalanche-staging:
-	ENV=staging forge script script/DeployBeaconAndFacetsAvalanche.s.sol:DeployBeaconAndFacetsAvalanche \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
+# deploy-beacon-and-facets-avalanche-staging:
+# 	ENV=staging forge script script/DeployBeaconAndFacetsAvalanche.s.sol:DeployBeaconAndFacetsAvalanche \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
 
 # --------------------------------------------------------------------------------------------------
 # Deploy: PAU Factory                                                                              #
@@ -94,23 +94,23 @@ deploy-factory-mainnet-staging:
 
 # Base
 
-deploy-factory-base-production:
-	CHAIN=base ENV=production forge script script/DeployPAUFactory.s.sol:DeployPAUFactory \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
+# deploy-factory-base-production:
+# 	CHAIN=base ENV=production forge script script/DeployPAUFactory.s.sol:DeployPAUFactory \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
 
-deploy-factory-base-staging:
-	CHAIN=base ENV=staging forge script script/DeployPAUFactory.s.sol:DeployPAUFactory \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
+# deploy-factory-base-staging:
+# 	CHAIN=base ENV=staging forge script script/DeployPAUFactory.s.sol:DeployPAUFactory \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
 
 # Avalanche
 
-deploy-factory-avalanche-production:
-	CHAIN=avalanche ENV=production forge script script/DeployPAUFactory.s.sol:DeployPAUFactory \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
+# deploy-factory-avalanche-production:
+# 	CHAIN=avalanche ENV=production forge script script/DeployPAUFactory.s.sol:DeployPAUFactory \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
 
-deploy-factory-avalanche-staging:
-	CHAIN=avalanche ENV=staging forge script script/DeployPAUFactory.s.sol:DeployPAUFactory \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
+# deploy-factory-avalanche-staging:
+# 	CHAIN=avalanche ENV=staging forge script script/DeployPAUFactory.s.sol:DeployPAUFactory \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
 
 # --------------------------------------------------------------------------------------------------
 # Deploy: PAU System                                                                               #
@@ -133,20 +133,20 @@ deploy-pau-mainnet-staging:
 
 # Base
 
-deploy-pau-base-production:
-	CHAIN=base ENV=production forge script script/DeployPAU.s.sol:DeployPAU \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
+# deploy-pau-base-production:
+# 	CHAIN=base ENV=production forge script script/DeployPAU.s.sol:DeployPAU \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
 
-deploy-pau-base-staging:
-	CHAIN=base ENV=staging forge script script/DeployPAU.s.sol:DeployPAU \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
+# deploy-pau-base-staging:
+# 	CHAIN=base ENV=staging forge script script/DeployPAU.s.sol:DeployPAU \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
 
 # Avalanche
 
-deploy-pau-avalanche-production:
-	CHAIN=avalanche ENV=production forge script script/DeployPAU.s.sol:DeployPAU \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
+# deploy-pau-avalanche-production:
+# 	CHAIN=avalanche ENV=production forge script script/DeployPAU.s.sol:DeployPAU \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
 
-deploy-pau-avalanche-staging:
-	CHAIN=avalanche ENV=staging forge script script/DeployPAU.s.sol:DeployPAU \
-		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
+# deploy-pau-avalanche-staging:
+# 	CHAIN=avalanche ENV=staging forge script script/DeployPAU.s.sol:DeployPAU \
+# 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(AVALANCHE_RPC_URL)
