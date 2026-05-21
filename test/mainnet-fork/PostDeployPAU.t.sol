@@ -4,6 +4,7 @@ pragma solidity ^0.8.34;
 import { VmSafe } from "../../lib/forge-std/src/Vm.sol";
 
 import { IAccessControl } from "../../lib/diamond-pau/lib/openzeppelin-contracts/contracts/access/IAccessControl.sol";
+import { Initializable }  from "../../lib/diamond-pau/lib/oz-upgradeable/contracts/proxy/utils/Initializable.sol";
 
 import { IPAUFactory } from "../../lib/diamond-pau/src/interfaces/IPAUFactory.sol";
 
@@ -18,15 +19,15 @@ import { PostDeployTestBase } from "../PostDeployTestBase.t.sol";
 contract PostDeployPAUTests is PostDeployTestBase {
 
     // Paste from script/output/1/pau-mainnet-{env}-latest.json + the PAUFactory output
-    address internal constant ACCESS_CONTROLS = 0x0000000000000000000000000000000000000000;
-    address internal constant ADMIN           = 0x0000000000000000000000000000000000000000;
-    address internal constant ALLOCATOR       = 0x0000000000000000000000000000000000000000;
-    address internal constant ALLOCATOR_ADMIN = 0x0000000000000000000000000000000000000000;
-    address internal constant ALM_PROXY       = 0x0000000000000000000000000000000000000000;
-    address internal constant CONTROLLER      = 0x0000000000000000000000000000000000000000;
-    address internal constant DEPLOYER        = 0x0000000000000000000000000000000000000000;
-    address internal constant PAU_FACTORY     = 0x0000000000000000000000000000000000000000;
-    address internal constant RATE_LIMITS     = 0x0000000000000000000000000000000000000000;
+    address internal constant ACCESS_CONTROLS = 0x190451a957bB48675Da9376c242449B366aB42A7;
+    address internal constant ADMIN           = 0x3300f198988e4C9C63F75dF86De36421f06af8c4;
+    address internal constant ALLOCATOR       = 0x8a25A24EDE9482C4Fc0738F99611BE58F1c839AB;
+    address internal constant ALLOCATOR_ADMIN = 0x90D8c80C028B4C09C0d8dcAab9bbB057F0513431;
+    address internal constant ALM_PROXY       = 0xC0060BB5d333C1F2D3159058AE3223D4FD73abe4;
+    address internal constant CONTROLLER      = 0x4A412f032536F6c4139F24b813872f8A44CF7148;
+    address internal constant DEPLOYER        = 0x1ca4ECaF0E13ca833c80dA835DEEa15e1684361d;
+    address internal constant PAU_FACTORY     = 0xabd7925b6a72937FA38F56a2aA466f17BefFEe65;
+    address internal constant RATE_LIMITS     = 0xC9DEa685709d154CA1218BeE1d409b3E44F9Cb26;
 
     AccessControls internal accessControls;
     ALMProxy       internal almProxy;
@@ -45,7 +46,7 @@ contract PostDeployPAUTests is PostDeployTestBase {
     }
 
     function _getBlock() internal pure returns (uint256) {
-        return 24684236; // After the PAU deployment block.
+        return 25143126; // May-21-2026 10:49:11 AM +UTC : After the PAU deployment block.
     }
 
     function test_postDeployState() external view {
@@ -123,7 +124,11 @@ contract PostDeployPAUTests is PostDeployTestBase {
 
         VmSafe.EthGetLogs[] memory controllerAllLogs = _getEvents(block.chainid, CONTROLLER, "");
 
-        assertEq(controllerAllLogs.length, 0);
+        assertEq(controllerAllLogs.length, 1);
+
+        // Initialized(1) from PAUFactory.deploy.
+        assertEq(controllerAllLogs[0].topics[0], Initializable.Initialized.selector);
+        assertEq(controllerAllLogs[0].data,      abi.encode(uint64(1)));
 
        /*******************************************************************************************/
        /*** AccessControls events                                                               ***/
@@ -179,13 +184,13 @@ contract PostDeployPAUTests is PostDeployTestBase {
 
         VmSafe.EthGetLogs[] memory almProxyAllLogs = _getEvents(block.chainid, ALM_PROXY, "");
 
-        assertEq(almProxyAllLogs.length, 2);
+        assertEq(almProxyAllLogs.length, 6);
 
-        // RoleGranted(DEFAULT_ADMIN_ROLE, ADMIN, DEPLOYER) from PAUFactory.deploy.
+        // RoleGranted(DEFAULT_ADMIN_ROLE, PAU_FACTORY, PAU_FACTORY) from PAUFactory.deploy.
         assertEq(almProxyAllLogs[0].topics[0],             IAccessControl.RoleGranted.selector);
         assertEq(almProxyAllLogs[0].topics[1],             DEFAULT_ADMIN_ROLE);
-        assertEq(_toAddress(almProxyAllLogs[0].topics[2]), ADMIN);
-        assertEq(_toAddress(almProxyAllLogs[0].topics[3]), DEPLOYER);
+        assertEq(_toAddress(almProxyAllLogs[0].topics[2]), PAU_FACTORY);
+        assertEq(_toAddress(almProxyAllLogs[0].topics[3]), PAU_FACTORY);
 
         // RoleGranted(CONTROLLER_ROLE, CONTROLLER, PAU_FACTORY) from PAUFactory.deploy.
         assertEq(almProxyAllLogs[1].topics[0],             IAccessControl.RoleGranted.selector);
@@ -200,26 +205,26 @@ contract PostDeployPAUTests is PostDeployTestBase {
         assertEq(_toAddress(almProxyAllLogs[2].topics[2]), DEPLOYER);
         assertEq(_toAddress(almProxyAllLogs[2].topics[3]), PAU_FACTORY);
 
-        // RoleRevoked(DEFAULT_ADMIN_ROLE, DEPLOYER, DEPLOYER) from PAUFactory.deploy.
+        // RoleRevoked(DEFAULT_ADMIN_ROLE, PAU_FACTORY, PAU_FACTORY) from PAUFactory.deploy.
         // Role revoked from factory.
-        assertEq(almProxyAllLogs[2].topics[0],             IAccessControl.RoleRevoked.selector);
-        assertEq(almProxyAllLogs[2].topics[1],             DEFAULT_ADMIN_ROLE);
-        assertEq(_toAddress(almProxyAllLogs[2].topics[2]), DEPLOYER);
-        assertEq(_toAddress(almProxyAllLogs[2].topics[3]), DEPLOYER);
+        assertEq(almProxyAllLogs[3].topics[0],             IAccessControl.RoleRevoked.selector);
+        assertEq(almProxyAllLogs[3].topics[1],             DEFAULT_ADMIN_ROLE);
+        assertEq(_toAddress(almProxyAllLogs[3].topics[2]), PAU_FACTORY);
+        assertEq(_toAddress(almProxyAllLogs[3].topics[3]), PAU_FACTORY);
 
         // RoleGranted(DEFAULT_ADMIN_ROLE, ADMIN, DEPLOYER) from DeployPAU.
         // Role granted to admin from deployer.
-        assertEq(almProxyAllLogs[3].topics[0],             IAccessControl.RoleGranted.selector);
-        assertEq(almProxyAllLogs[3].topics[1],             DEFAULT_ADMIN_ROLE);
-        assertEq(_toAddress(almProxyAllLogs[3].topics[2]), ADMIN);
-        assertEq(_toAddress(almProxyAllLogs[3].topics[3]), DEPLOYER);
+        assertEq(almProxyAllLogs[4].topics[0],             IAccessControl.RoleGranted.selector);
+        assertEq(almProxyAllLogs[4].topics[1],             DEFAULT_ADMIN_ROLE);
+        assertEq(_toAddress(almProxyAllLogs[4].topics[2]), ADMIN);
+        assertEq(_toAddress(almProxyAllLogs[4].topics[3]), DEPLOYER);
 
         // RoleRevoked(DEFAULT_ADMIN_ROLE, DEPLOYER, DEPLOYER) from DeployPAU.
         // Role revoked from deployer.
-        assertEq(almProxyAllLogs[4].topics[0],             IAccessControl.RoleRevoked.selector);
-        assertEq(almProxyAllLogs[4].topics[1],             DEFAULT_ADMIN_ROLE);
-        assertEq(_toAddress(almProxyAllLogs[4].topics[2]), DEPLOYER);
-        assertEq(_toAddress(almProxyAllLogs[4].topics[3]), DEPLOYER);
+        assertEq(almProxyAllLogs[5].topics[0],             IAccessControl.RoleRevoked.selector);
+        assertEq(almProxyAllLogs[5].topics[1],             DEFAULT_ADMIN_ROLE);
+        assertEq(_toAddress(almProxyAllLogs[5].topics[2]), DEPLOYER);
+        assertEq(_toAddress(almProxyAllLogs[5].topics[3]), DEPLOYER);
 
        /*******************************************************************************************/
        /*** RateLimits events                                                                   ***/
@@ -227,13 +232,13 @@ contract PostDeployPAUTests is PostDeployTestBase {
 
         VmSafe.EthGetLogs[] memory rateLimitsAllLogs = _getEvents(block.chainid, RATE_LIMITS, "");
 
-        assertEq(rateLimitsAllLogs.length, 2);
+        assertEq(rateLimitsAllLogs.length, 6);
 
-        // RoleGranted(DEFAULT_ADMIN_ROLE, ADMIN, DEPLOYER) from PAUFactory.deploy.
+        // RoleGranted(DEFAULT_ADMIN_ROLE, PAU_FACTORY, PAU_FACTORY) from PAUFactory.deploy.
         assertEq(rateLimitsAllLogs[0].topics[0],             IAccessControl.RoleGranted.selector);
         assertEq(rateLimitsAllLogs[0].topics[1],             DEFAULT_ADMIN_ROLE);
-        assertEq(_toAddress(rateLimitsAllLogs[0].topics[2]), ADMIN);
-        assertEq(_toAddress(rateLimitsAllLogs[0].topics[3]), DEPLOYER);
+        assertEq(_toAddress(rateLimitsAllLogs[0].topics[2]), PAU_FACTORY);
+        assertEq(_toAddress(rateLimitsAllLogs[0].topics[3]), PAU_FACTORY);
 
         // RoleGranted(CONTROLLER_ROLE, CONTROLLER, PAU_FACTORY) from PAUFactory.deploy.
         assertEq(rateLimitsAllLogs[1].topics[0],             IAccessControl.RoleGranted.selector);
@@ -248,12 +253,12 @@ contract PostDeployPAUTests is PostDeployTestBase {
         assertEq(_toAddress(rateLimitsAllLogs[2].topics[2]), DEPLOYER);
         assertEq(_toAddress(rateLimitsAllLogs[2].topics[3]), PAU_FACTORY);
 
-        // RoleRevoked(DEFAULT_ADMIN_ROLE, DEPLOYER, DEPLOYER) from PAUFactory.deploy.
+        // RoleRevoked(DEFAULT_ADMIN_ROLE, PAU_FACTORY, PAU_FACTORY) from PAUFactory.deploy.
         // Role revoked from factory.
         assertEq(rateLimitsAllLogs[3].topics[0],             IAccessControl.RoleRevoked.selector);
         assertEq(rateLimitsAllLogs[3].topics[1],             DEFAULT_ADMIN_ROLE);
-        assertEq(_toAddress(rateLimitsAllLogs[3].topics[2]), DEPLOYER);
-        assertEq(_toAddress(rateLimitsAllLogs[3].topics[3]), DEPLOYER);
+        assertEq(_toAddress(rateLimitsAllLogs[3].topics[2]), PAU_FACTORY);
+        assertEq(_toAddress(rateLimitsAllLogs[3].topics[3]), PAU_FACTORY);
 
         // RoleGranted(DEFAULT_ADMIN_ROLE, ADMIN, DEPLOYER) from DeployPAU.
         // Role granted to admin from deployer.

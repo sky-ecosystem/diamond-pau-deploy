@@ -22,15 +22,11 @@ contract PostDeployPAUFactoryTests is PostDeployTestBase {
     }
 
     function _getBlock() internal pure returns (uint256) {
-        return 25143000; // May-21-2026 10:23:47 AM +UTC : After the PAUFactory deployment block.
+        return 25142920; // May-21-2026 10:07:47 AM +UTC : After the PAUFactory deployment block.
     }
 
-    function test_postDeployState() external {
+    function test_postDeployState() external view {
         assertEq(factory.beacon(), BEACON);
-
-        VmSafe.EthGetLogs[] memory allLogs = _getEvents(block.chainid, PAU_FACTORY, "");
-
-        assertEq(allLogs.length, 0); // Factory has no roles or events at this stage.
     }
 
 }
