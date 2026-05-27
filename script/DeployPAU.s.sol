@@ -61,7 +61,7 @@ contract DeployPAU is Script {
 
         console.log("RateLimits deployed at: ", address(rateLimits));
 
-        // Step 4: Deploy Controller with deployer as temporary admin
+        // Step 4: Deploy Controller.
 
         Controller controller = Controller(payable(
             PAUFactory(pauFactory).deployController(
