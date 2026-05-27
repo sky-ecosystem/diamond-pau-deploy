@@ -283,7 +283,7 @@ contract DeployBeaconAndFacetsMainnet is Script {
 
         wires[0] = IEI.Wire(IControllerFull.cctp_VERSION.selector,                 IFacet.VERSION.selector);
         wires[1] = IEI.Wire(IControllerFull.cctp_DESTINATION_CALLER.selector,      ICCTPFacet.DESTINATION_CALLER.selector);
-        wires[2] = IEI.Wire(IControllerFull.cctp_MAX_FINALITY_THRESHOLD.selector,  ICCTPFacet.MAX_FINALITY_THRESHOLD.selector);
+        wires[2] = IEI.Wire(IControllerFull.cctp_MIN_FINALITY_THRESHOLD.selector,  ICCTPFacet.MIN_FINALITY_THRESHOLD.selector);
         wires[3] = IEI.Wire(IControllerFull.cctp_cctp.selector,                    ICCTPFacet.cctp.selector);
         wires[4] = IEI.Wire(IControllerFull.cctp_usdc.selector,                    ICCTPFacet.usdc.selector);
         wires[5] = IEI.Wire(IControllerFull.cctp_setDomainParameters.selector,     ICCTPFacet.setDomainParameters.selector);

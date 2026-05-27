@@ -43,24 +43,49 @@ contract DeployPAU is Script {
 
         require(deployer != admin, "DeployPAU/deployer-must-differ-from-admin");
 
-        // Step 1: Deploy PAU system with deployer as temporary admin
+        // Step 1: Deploy AccessControls with deployer as temporary admin
 
-        Controller controller = Controller(payable(PAUFactory(pauFactory).deploy(deployer)));
+        AccessControls accessControls = AccessControls(PAUFactory(pauFactory).deployAccessControls(deployer));
+
+        console.log("AccessControls deployed at: ", address(accessControls));
+
+        // Step 2: Deploy ALMProxy with deployer as temporary admin
+
+        ALMProxy almProxy = ALMProxy(payable(PAUFactory(pauFactory).deployProxy(deployer)));
+
+        console.log("ALMProxy deployed at: ", address(almProxy));
+
+        // Step 3: Deploy RateLimits with deployer as temporary admin
+
+        RateLimits rateLimits = RateLimits(PAUFactory(pauFactory).deployRateLimits(deployer));
+
+        console.log("RateLimits deployed at: ", address(rateLimits));
+
+        // Step 4: Deploy Controller with deployer as temporary admin
+
+        Controller controller = Controller(payable(
+            PAUFactory(pauFactory).deployController(
+                address(accessControls),
+                address(almProxy),
+                address(rateLimits)
+            ))
+        );
 
         console.log("Controller deployed at: ", address(controller));
 
-        AccessControls accessControls = AccessControls(controller.accessControls());
-        ALMProxy       almProxy       = ALMProxy(payable(controller.proxy()));
-        RateLimits     rateLimits     = RateLimits(controller.rateLimits());
+        // Step 5: Grant CONTROLLER role on ALMProxy and RateLimits to Controller
 
-        // Step 2: Grant roles to allocator and allocatorAdmin on AccessControls
+        almProxy.grantRole(almProxy.CONTROLLER(),     address(controller));
+        rateLimits.grantRole(rateLimits.CONTROLLER(), address(controller));
+
+        // Step 6: Grant roles to allocator and allocatorAdmin on AccessControls
 
         accessControls.grantRole(ALLOCATOR_ROLE,       allocator);
         accessControls.grantRole(ALLOCATOR_ADMIN_ROLE, allocatorAdmin);
 
         accessControls.setRoleAdmin(ALLOCATOR_ROLE, ALLOCATOR_ADMIN_ROLE);
 
-        // Step 3: Transfer DEFAULT_ADMIN_ROLE to final admin and revoke from deployer.
+        // Step 7: Transfer DEFAULT_ADMIN_ROLE to final admin and revoke from deployer.
         //         For AccessControls, ALMProxy, and RateLimits.
 
         accessControls.grantRole(accessControls.DEFAULT_ADMIN_ROLE(), admin);
@@ -75,7 +100,7 @@ contract DeployPAU is Script {
 
         vm.stopBroadcast();
 
-        // Step 4: Export addresses
+        // Step 8: Export addresses
 
         ScriptTools.exportContract(fileSlug, "accessControls", address(accessControls));
         ScriptTools.exportContract(fileSlug, "almProxy",       address(almProxy));
