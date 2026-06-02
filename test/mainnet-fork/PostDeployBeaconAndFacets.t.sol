@@ -11,6 +11,8 @@ import { Ethereum as GroveEthereum } from "../../lib/diamond-pau/lib/grove-addre
 import { IBeacon }                 from "../../lib/diamond-pau/src/interfaces/IBeacon.sol";
 import { IEnumerableIntegrations } from "../../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
 
+import { ForkTestBase } from "../../lib/diamond-pau/test/mainnet-fork/ForkTestBase.t.sol";
+
 import { Beacon } from "../../lib/diamond-pau/src/Beacon.sol";
 
 import { ICCTPFacet }         from "../../lib/diamond-pau/src/facets/cctp/ICCTPFacet.sol";
@@ -228,6 +230,42 @@ contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
         assertEq(_toAddress(allLogs[27].topics[3]), DEPLOYER);
     }
 
+    function test_postDeployState_wiringMatchesReference() external {
+        uint256 postDeployFork = vm.activeFork();
+
+        (
+            IEnumerableIntegrations.Integration[] memory refIntegrations,
+            bytes32[]                             memory refFacetCodehashes
+        ) = new WiredBeaconHarness().buildReferenceIntegrations();
+
+        vm.selectFork(postDeployFork);
+
+        Beacon deployed = Beacon(BEACON);
+
+        assertEq(refIntegrations.length, deployed.integrations().length);
+
+        for (uint256 i; i < refIntegrations.length; ++i) {
+            bytes32 refId = refIntegrations[i].id;
+
+            IEnumerableIntegrations.Wire[] memory refWires    = refIntegrations[i].config.wires;
+            IEnumerableIntegrations.Config memory deployedCfg = deployed.getConfig(refId);
+
+            assertEq(deployedCfg.facet != address(0), true,                      "missing integration on deployed beacon");
+            assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
+            assertEq(refWires.length,                 deployedCfg.wires.length,  "wire count mismatch");
+
+            for (uint256 j; j < refWires.length; ++j) {
+                IEnumerableIntegrations.Dispatch memory deployedDispatch = deployed.getDispatch(refWires[j].callSelector);
+
+                assertEq(deployedDispatch.delegateSelector, refWires[j].delegateSelector, "delegateSelector mismatch");
+            }
+        }
+    }
+
+    /**********************************************************************************************/
+    /*** Helper functions                                                                       ***/
+    /**********************************************************************************************/
+
     function _assertIntegration(
         bytes32 id,
         address expectedFacet,
@@ -260,6 +298,27 @@ contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
 
         assertEq(cfg.facet,        expectedFacet);
         assertEq(cfg.wires.length, expectedWireCount);
+    }
+
+}
+
+contract WiredBeaconHarness is ForkTestBase {
+
+    function buildReferenceIntegrations()
+        external
+        returns (
+            IEnumerableIntegrations.Integration[] memory integrations_,
+            bytes32[]                             memory facetCodehashes
+        )
+    {
+        setUp();
+
+        integrations_   = beacon.integrations();
+        facetCodehashes = new bytes32[](integrations_.length);
+
+        for (uint256 i; i < integrations_.length; ++i) {
+            facetCodehashes[i] = integrations_[i].config.facet.codehash;
+        }
     }
 
 }
