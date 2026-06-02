@@ -4,7 +4,7 @@ pragma solidity ^0.8.34;
 import { Test }   from "../lib/forge-std/src/Test.sol";
 import { VmSafe } from "../lib/forge-std/src/Vm.sol";
 
-abstract contract PostDeployTestBase is Test {
+abstract contract PostDeployFacetsAndWireBase is Test {
 
     bytes32 internal constant DEFAULT_ADMIN_ROLE   = 0x00;
     bytes32 internal constant ALLOCATOR_ROLE       = keccak256("ALLOCATOR_ROLE");
@@ -107,7 +107,7 @@ abstract contract PostDeployTestBase is Test {
     }
 
     function _toBool(bytes32 b) internal pure returns (bool) {
-        require(uint256(b) <= 1, "PostDeployTestBase/to-bool-failed");
+        require(uint256(b) <= 1, "PostDeployFacetsAndWireBase/to-bool-failed");
 
         return uint256(b) == uint256(1);
     }

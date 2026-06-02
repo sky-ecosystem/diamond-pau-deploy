@@ -5,10 +5,10 @@ import { Script, stdJson, console } from "../lib/forge-std/src/Script.sol";
 
 import { ScriptTools } from "../lib/dss-test/src/ScriptTools.sol";
 
+import { IEnumerableIntegrations as IEI } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
+
 import { Ethereum }                  from "../lib/diamond-pau/lib/spark-address-registry/src/Ethereum.sol";
 import { Ethereum as GroveEthereum } from "../lib/diamond-pau/lib/grove-address-registry/src/Ethereum.sol";
-
-import { IEnumerableIntegrations as IEI } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
 
 import { Beacon } from "../lib/diamond-pau/src/Beacon.sol";
 
@@ -93,41 +93,9 @@ import { IWEETHFacetExternal }         from "./interfaces/ExternalFacetInterface
 import { IWrapProxyETHFacetExternal }  from "./interfaces/ExternalFacetInterfaces.sol";
 import { IWSTETHFacetExternal }        from "./interfaces/ExternalFacetInterfaces.sol";
 
-contract DeployBeaconAndFacetsMainnet is Script {
+abstract contract DeployFacetsAndWire is Script {
 
     using stdJson for string;
-
-    /**********************************************************************************************/
-    /*** Structs                                                                                ***/
-    /**********************************************************************************************/
-
-    struct MainnetFacetAddresses {
-        address aaveFacet;
-        address basinFacet;
-        address cctpFacet;
-        address centrifugeFacet;
-        address curveFacet;
-        address daiUSDSFacet;
-        address erc4626Facet;
-        address erc7540Facet;
-        address ethenaFacet;
-        address farmFacet;
-        address layerZeroFacet;
-        address mapleFacet;
-        address merklFacet;
-        address otcFacet;
-        address pendleFacet;
-        address psmFacet;
-        address sparkVaultFacet;
-        address superstateFacet;
-        address transferAssetFacet;
-        address uniswapV3Facet;
-        address uniswapV4Facet;
-        address usdsFacet;
-        address weethFacet;
-        address wrapProxyETHFacet;
-        address wstethFacet;
-    }
 
     /**********************************************************************************************/
     /*** Constants                                                                              ***/
@@ -152,111 +120,49 @@ contract DeployBeaconAndFacetsMainnet is Script {
     /*** Run function                                                                           ***/
     /**********************************************************************************************/
 
-    function run() external {
+    function run() virtual public {
         string memory env = vm.envString("ENV");
-
-        vm.createSelectFork(getChain("mainnet").rpcUrl);
 
         vm.setEnv("FOUNDRY_ROOT_CHAINID",             vm.toString(block.chainid));
         vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", "true");
 
-        string memory fileSlug = string(abi.encodePacked("beacon-and-facets-mainnet-", env));
-        string memory config   = ScriptTools.loadConfig(fileSlug);
+        string memory config   = ScriptTools.loadConfig(_configFacetFileSlug());
 
-        address admin = config.readAddress(".admin");
+        address admin  = config.readAddress(".admin");
 
-        console.log("Deploying PAU beacon + facets...\n  Chain: Mainnet\n  Env: %s", env);
+        beacon = Beacon(config.readAddress(".beacon"));
+
+        console.log("%s\n  Env: %s", _logPrefix(), env);
 
         vm.startBroadcast();
 
         address deployer = msg.sender;
 
-        require(deployer != admin, "DeployBeaconAndFacetsMainnet/deployer-must-differ-from-admin");
+        require(deployer != admin, "DeployFacetsAndWire/deployer-must-differ-from-admin");
 
-        // Step 1: deploy Beacon with deployer as temporary admin so this script can wire facets.
+        // Step 1: deploy each facet and wire it through beacon.setIntegration.
+        // NOTE: Assuming beacon admin is deployer
+        _deployAndWireFacets();
 
-        beacon = new Beacon(deployer);
+        // Step 2: Grant admin role to final admin, then revoke deployer.
 
-        console.log("PAU beacon deployed at: ", address(beacon));
-
-        // Step 2: deploy each facet and wire it through beacon.setIntegration.
-        MainnetFacetAddresses memory facets = _deployAndWireFacets();
-
-        // Step 3: Grant admin role to final admin, then revoke deployer.
-        
         beacon.grantRole(beacon.DEFAULT_ADMIN_ROLE(),  admin);
         beacon.revokeRole(beacon.DEFAULT_ADMIN_ROLE(), deployer);
 
         console.log("Beacon admin transferred to: ", admin);
 
         vm.stopBroadcast();
-
-        // Step 4: export addresses.
-
-        ScriptTools.exportContract(fileSlug, "beacon", address(beacon));
-
-        _exportFacets(facets, fileSlug);
     }
 
     /**********************************************************************************************/
-    /*** Deploy + Wire Facets                                                                   ***/
+    /*** Virtual functions                                                                      ***/
     /**********************************************************************************************/
 
-    function _deployAndWireFacets() internal returns (MainnetFacetAddresses memory facets) {
-        facets.aaveFacet          = _deployAndWireAaveFacet();
-        facets.basinFacet         = _deployAndWireBasinFacet();
-        facets.cctpFacet          = _deployAndWireCCTPFacet();
-        facets.centrifugeFacet    = _deployAndWireCentrifugeFacet();
-        facets.curveFacet         = _deployAndWireCurveFacet();
-        facets.daiUSDSFacet       = _deployAndWireDAIUSDSFacet();
-        facets.erc4626Facet       = _deployAndWireERC4626Facet();
-        facets.erc7540Facet       = _deployAndWireERC7540Facet();
-        facets.ethenaFacet        = _deployAndWireEthenaFacet();
-        facets.farmFacet          = _deployAndWireFarmFacet();
-        facets.layerZeroFacet     = _deployAndWireLayerZeroFacet();
-        facets.mapleFacet         = _deployAndWireMapleFacet();
-        facets.merklFacet         = _deployAndWireMerklFacet();
-        facets.otcFacet           = _deployAndWireOTCFacet();
-        facets.pendleFacet        = _deployAndWirePendleFacet();
-        facets.psmFacet           = _deployAndWirePSMFacet();
-        facets.sparkVaultFacet    = _deployAndWireSparkVaultFacet();
-        facets.superstateFacet    = _deployAndWireSuperstateFacet();
-        facets.transferAssetFacet = _deployAndWireTransferAssetFacet();
-        facets.uniswapV3Facet     = _deployAndWireUniswapV3Facet();
-        facets.uniswapV4Facet     = _deployAndWireUniswapV4Facet();
-        facets.usdsFacet          = _deployAndWireUSDSFacet();
-        facets.weethFacet         = _deployAndWireWEETHFacet();
-        facets.wrapProxyETHFacet  = _deployAndWireWrapProxyETHFacet();
-        facets.wstethFacet        = _deployAndWireWSTETHFacet();
-    }
+    function _deployAndWireFacets() internal virtual;
 
-    function _exportFacets(MainnetFacetAddresses memory facets, string memory fileSlug) internal {
-        ScriptTools.exportContract(fileSlug, "aaveFacet",          facets.aaveFacet);
-        ScriptTools.exportContract(fileSlug, "basinFacet",         facets.basinFacet);
-        ScriptTools.exportContract(fileSlug, "cctpFacet",          facets.cctpFacet);
-        ScriptTools.exportContract(fileSlug, "centrifugeFacet",    facets.centrifugeFacet);
-        ScriptTools.exportContract(fileSlug, "curveFacet",         facets.curveFacet);
-        ScriptTools.exportContract(fileSlug, "daiUSDSFacet",       facets.daiUSDSFacet);
-        ScriptTools.exportContract(fileSlug, "erc4626Facet",       facets.erc4626Facet);
-        ScriptTools.exportContract(fileSlug, "erc7540Facet",       facets.erc7540Facet);
-        ScriptTools.exportContract(fileSlug, "ethenaFacet",        facets.ethenaFacet);
-        ScriptTools.exportContract(fileSlug, "farmFacet",          facets.farmFacet);
-        ScriptTools.exportContract(fileSlug, "layerZeroFacet",     facets.layerZeroFacet);
-        ScriptTools.exportContract(fileSlug, "mapleFacet",         facets.mapleFacet);
-        ScriptTools.exportContract(fileSlug, "merklFacet",         facets.merklFacet);
-        ScriptTools.exportContract(fileSlug, "otcFacet",           facets.otcFacet);
-        ScriptTools.exportContract(fileSlug, "pendleFacet",        facets.pendleFacet);
-        ScriptTools.exportContract(fileSlug, "psmFacet",           facets.psmFacet);
-        ScriptTools.exportContract(fileSlug, "sparkVaultFacet",    facets.sparkVaultFacet);
-        ScriptTools.exportContract(fileSlug, "superstateFacet",    facets.superstateFacet);
-        ScriptTools.exportContract(fileSlug, "transferAssetFacet", facets.transferAssetFacet);
-        ScriptTools.exportContract(fileSlug, "uniswapV3Facet",     facets.uniswapV3Facet);
-        ScriptTools.exportContract(fileSlug, "uniswapV4Facet",     facets.uniswapV4Facet);
-        ScriptTools.exportContract(fileSlug, "usdsFacet",          facets.usdsFacet);
-        ScriptTools.exportContract(fileSlug, "weethFacet",         facets.weethFacet);
-        ScriptTools.exportContract(fileSlug, "wrapProxyETHFacet",  facets.wrapProxyETHFacet);
-        ScriptTools.exportContract(fileSlug, "wstethFacet",        facets.wstethFacet);
-    }
+    function _configFacetFileSlug() internal virtual returns (string memory);
+
+    function _logPrefix() internal virtual returns (string memory);
 
     /**********************************************************************************************/
     /*** Per-facet deploy + wire helpers                                                        ***/
@@ -279,6 +185,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "aaveFacet", facet);
     }
 
     function _deployAndWireBasinFacet() internal returns (address facet) {
@@ -296,6 +204,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "basinFacet", facet);
     }
 
     function _deployAndWireCCTPFacet() internal returns (address facet) {
@@ -321,6 +231,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "cctpFacet", facet);
     }
 
     function _deployAndWireCentrifugeFacet() internal returns (address facet) {
@@ -347,6 +259,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "centrifugeFacet", facet);
     }
 
     function _deployAndWireCurveFacet() internal returns (address facet) {
@@ -370,6 +284,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "curveFacet", facet);
     }
 
     function _deployAndWireDAIUSDSFacet() internal returns (address facet) {
@@ -394,6 +310,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "daiUSDSFacet", facet);
     }
 
     function _deployAndWireERC4626Facet() internal returns (address facet) {
@@ -415,6 +333,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "erc4626Facet", facet);
     }
 
     function _deployAndWireERC7540Facet() internal returns (address facet) {
@@ -436,6 +356,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "erc7540Facet", facet);
     }
 
     function _deployAndWireEthenaFacet() internal returns (address facet) {
@@ -471,6 +393,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "ethenaFacet", facet);
     }
 
     function _deployAndWireFarmFacet() internal returns (address facet) {
@@ -490,6 +414,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "farmFacet", facet);
     }
 
     function _deployAndWireLayerZeroFacet() internal returns (address facet) {
@@ -508,6 +434,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "layerZeroFacet", facet);
     }
 
     function _deployAndWireMapleFacet() internal returns (address facet) {
@@ -525,6 +453,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "mapleFacet", facet);
     }
 
     function _deployAndWireMerklFacet() internal returns (address facet) {
@@ -540,6 +470,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "merklFacet", facet);
     }
 
     function _deployAndWireOTCFacet() internal returns (address facet) {
@@ -566,6 +498,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "otcFacet", facet);
     }
 
     function _deployAndWirePendleFacet() internal returns (address facet) {
@@ -584,6 +518,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "pendleFacet", facet);
     }
 
     function _deployAndWirePSMFacet() internal returns (address facet) {
@@ -613,6 +549,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "psmFacet", facet);
     }
 
     function _deployAndWireSparkVaultFacet() internal returns (address facet) {
@@ -628,6 +566,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "sparkVaultFacet", facet);
     }
 
     function _deployAndWireSuperstateFacet() internal returns (address facet) {
@@ -648,6 +588,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "superstateFacet", facet);
     }
 
     function _deployAndWireTransferAssetFacet() internal returns (address facet) {
@@ -663,6 +605,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "transferAssetFacet", facet);
     }
 
     function _deployAndWireUniswapV3Facet() internal returns (address facet) {
@@ -701,6 +645,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "uniswapV3Facet", facet);
     }
 
     function _deployAndWireUniswapV4Facet() internal returns (address facet) {
@@ -734,6 +680,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "uniswapV4Facet", facet);
     }
 
     function _deployAndWireUSDSFacet() internal returns (address facet) {
@@ -756,6 +704,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "usdsFacet", facet);
     }
 
     function _deployAndWireWEETHFacet() internal returns (address facet) {
@@ -780,6 +730,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "weethFacet", facet);
     }
 
     function _deployAndWireWrapProxyETHFacet() internal returns (address facet) {
@@ -798,6 +750,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "wrapProxyETHFacet", facet);
     }
 
     function _deployAndWireWSTETHFacet() internal returns (address facet) {
@@ -824,6 +778,8 @@ contract DeployBeaconAndFacetsMainnet is Script {
             facet : facet,
             wires : wires
         }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "wstethFacet", facet);
     }
 
 }

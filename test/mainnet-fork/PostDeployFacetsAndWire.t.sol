@@ -28,18 +28,18 @@ import { IWEETHFacet }        from "../../lib/diamond-pau/src/facets/weeth/IWEET
 import { IWrapProxyETHFacet } from "../../lib/diamond-pau/src/facets/wrap-proxy-eth/IWrapProxyETHFacet.sol";
 import { IWSTETHFacet }       from "../../lib/diamond-pau/src/facets/wsteth/IWSTETHFacet.sol";
 
-import { PostDeployTestBase } from "../PostDeployTestBase.t.sol";
+import { PostDeployFacetsAndWireBase } from "../PostDeployFacetsAndWireBase.t.sol";
 
-contract PostDeployBeaconAndFacetsTests is PostDeployTestBase {
+contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
 
-    // From the DeployBeaconAndFacetsMainnet script (mirror of registry constants used at deploy time).
+    // From the DeployFacetsAndWireMainnet script (mirror of registry constants used at deploy time).
     address internal constant _UNISWAP_V3_POSITION_MANAGER = 0xC36442b4a4522E871399CD717aBDD847Ab11FE88;
     address internal constant _UNISWAP_V3_ROUTER           = 0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45;
     address internal constant _PERMIT2                     = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
     address internal constant _UNISWAP_V4_POSITION_MANAGER = 0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e;
     address internal constant _UNISWAP_V4_ROUTER           = 0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af;
 
-    // Paste from script/output/1/beacon-and-facets-mainnet-{env}-latest.json
+    // Paste from script/output/1/wire-facets-mainnet-{env}-latest.json
     address internal constant DEPLOYER             = 0x1ca4ECaF0E13ca833c80dA835DEEa15e1684361d;
     address internal constant ADMIN                = 0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB;
     address internal constant BEACON               = 0x9EA465978500399C6b4b9A356b14b00e6597e705;
