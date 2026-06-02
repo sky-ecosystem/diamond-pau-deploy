@@ -105,7 +105,7 @@ contract PostDeployPAUTests is PostDeployTestBase {
         assertEq(factoryAllLogs[0].topics[0],             IPAUFactory.AccessControlsDeployed.selector);
         assertEq(_toAddress(factoryAllLogs[0].topics[1]), ACCESS_CONTROLS);
 
-        assertEq(factoryAllLogs[1].topics[0],             IPAUFactory.ProxyDeployed.selector);
+        assertEq(factoryAllLogs[1].topics[0],             IPAUFactory.ALMProxyDeployed.selector);
         assertEq(_toAddress(factoryAllLogs[1].topics[1]), ALM_PROXY);
 
         assertEq(factoryAllLogs[2].topics[0],             IPAUFactory.RateLimitsDeployed.selector);

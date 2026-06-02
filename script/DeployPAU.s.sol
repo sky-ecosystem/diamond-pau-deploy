@@ -51,7 +51,7 @@ contract DeployPAU is Script {
 
         // Step 2: Deploy ALMProxy with deployer as temporary admin
 
-        ALMProxy almProxy = ALMProxy(payable(PAUFactory(pauFactory).deployProxy(deployer)));
+        ALMProxy almProxy = ALMProxy(payable(PAUFactory(pauFactory).deployALMProxy(deployer)));
 
         console.log("ALMProxy deployed at: ", address(almProxy));
 
