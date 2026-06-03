@@ -1,0 +1,6 @@
+{
+    "_info": "admin: PAU beacon final admin (authority for setIntegration / removeIntegration). beacon: PAU beacon address.",
+
+    "admin": "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB",
+    "beacon": "0x829dC2b7E94B1954F0764E573f2E0d45Afa28199"
+}

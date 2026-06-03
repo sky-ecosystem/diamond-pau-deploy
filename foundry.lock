@@ -1,0 +1,11 @@
+{
+  "lib/diamond-pau": {
+    "rev": "fd5f09c5254ac7f1931a85e81a8d9036bd257704"
+  },
+  "lib/dss-test": {
+    "rev": "61cf29fc0cf0c177a3b4072b433c43a7326ccd7b"
+  },
+  "lib/forge-std": {
+    "rev": "e4aef94c1768803a16fe19f7ce8b65defd027cfd"
+  }
+}

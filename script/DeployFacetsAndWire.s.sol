@@ -1,0 +1,791 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+pragma solidity ^0.8.34;
+
+import { Script, stdJson, console } from "../lib/forge-std/src/Script.sol";
+
+import { ScriptTools } from "../lib/dss-test/src/ScriptTools.sol";
+
+import { IEnumerableIntegrations as IEI } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
+
+import { Beacon } from "../lib/diamond-pau/src/Beacon.sol";
+
+import { IFacet } from "../lib/diamond-pau/src/facets/IFacet.sol";
+
+import { AaveFacet }          from "../lib/diamond-pau/src/facets/aave/AaveFacet.sol";
+import { BasinFacet }         from "../lib/diamond-pau/src/facets/basin/BasinFacet.sol";
+import { CCTPFacet }          from "../lib/diamond-pau/src/facets/cctp/CCTPFacet.sol";
+import { CentrifugeFacet }    from "../lib/diamond-pau/src/facets/centrifuge/CentrifugeFacet.sol";
+import { CurveFacet }         from "../lib/diamond-pau/src/facets/curve/CurveFacet.sol";
+import { DAIUSDSFacet }       from "../lib/diamond-pau/src/facets/dai-usds/DAIUSDSFacet.sol";
+import { ERC4626Facet }       from "../lib/diamond-pau/src/facets/erc4626/ERC4626Facet.sol";
+import { ERC7540Facet }       from "../lib/diamond-pau/src/facets/erc7540/ERC7540Facet.sol";
+import { EthenaFacet }        from "../lib/diamond-pau/src/facets/ethena/EthenaFacet.sol";
+import { FarmFacet }          from "../lib/diamond-pau/src/facets/farm/FarmFacet.sol";
+import { LayerZeroFacet }     from "../lib/diamond-pau/src/facets/layer-zero/LayerZeroFacet.sol";
+import { MapleFacet }         from "../lib/diamond-pau/src/facets/maple/MapleFacet.sol";
+import { MerklFacet }         from "../lib/diamond-pau/src/facets/merkl/MerklFacet.sol";
+import { OTCFacet }           from "../lib/diamond-pau/src/facets/otc/OTCFacet.sol";
+import { PendleFacet }        from "../lib/diamond-pau/src/facets/pendle/PendleFacet.sol";
+import { PSMFacet }           from "../lib/diamond-pau/src/facets/psm/PSMFacet.sol";
+import { SparkVaultFacet }    from "../lib/diamond-pau/src/facets/spark-vault/SparkVaultFacet.sol";
+import { SuperstateFacet }    from "../lib/diamond-pau/src/facets/superstate/SuperstateFacet.sol";
+import { TransferAssetFacet } from "../lib/diamond-pau/src/facets/transfer-asset/TransferAssetFacet.sol";
+import { UniswapV3Facet }     from "../lib/diamond-pau/src/facets/uniswap-v3/UniswapV3Facet.sol";
+import { UniswapV4Facet }     from "../lib/diamond-pau/src/facets/uniswap-v4/UniswapV4Facet.sol";
+import { USDSFacet }          from "../lib/diamond-pau/src/facets/usds/USDSFacet.sol";
+import { WEETHFacet }         from "../lib/diamond-pau/src/facets/weeth/WEETHFacet.sol";
+import { WrapProxyETHFacet }  from "../lib/diamond-pau/src/facets/wrap-proxy-eth/WrapProxyETHFacet.sol";
+import { WSTETHFacet }        from "../lib/diamond-pau/src/facets/wsteth/WSTETHFacet.sol";
+
+import { IAaveFacet }          from "../lib/diamond-pau/src/facets/aave/IAaveFacet.sol";
+import { IBasinFacet }         from "../lib/diamond-pau/src/facets/basin/IBasinFacet.sol";
+import { ICCTPFacet }          from "../lib/diamond-pau/src/facets/cctp/ICCTPFacet.sol";
+import { ICentrifugeFacet }    from "../lib/diamond-pau/src/facets/centrifuge/ICentrifugeFacet.sol";
+import { ICurveFacet }         from "../lib/diamond-pau/src/facets/curve/ICurveFacet.sol";
+import { IDAIUSDSFacet }       from "../lib/diamond-pau/src/facets/dai-usds/IDAIUSDSFacet.sol";
+import { IERC4626Facet }       from "../lib/diamond-pau/src/facets/erc4626/IERC4626Facet.sol";
+import { IERC7540Facet }       from "../lib/diamond-pau/src/facets/erc7540/IERC7540Facet.sol";
+import { IEthenaFacet }        from "../lib/diamond-pau/src/facets/ethena/IEthenaFacet.sol";
+import { IFarmFacet }          from "../lib/diamond-pau/src/facets/farm/IFarmFacet.sol";
+import { ILayerZeroFacet }     from "../lib/diamond-pau/src/facets/layer-zero/ILayerZeroFacet.sol";
+import { IMapleFacet }         from "../lib/diamond-pau/src/facets/maple/IMapleFacet.sol";
+import { IMerklFacet }         from "../lib/diamond-pau/src/facets/merkl/IMerklFacet.sol";
+import { IOTCFacet }           from "../lib/diamond-pau/src/facets/otc/IOTCFacet.sol";
+import { IPendleFacet }        from "../lib/diamond-pau/src/facets/pendle/IPendleFacet.sol";
+import { IPSMFacet }           from "../lib/diamond-pau/src/facets/psm/IPSMFacet.sol";
+import { ISparkVaultFacet }    from "../lib/diamond-pau/src/facets/spark-vault/ISparkVaultFacet.sol";
+import { ISuperstateFacet }    from "../lib/diamond-pau/src/facets/superstate/ISuperstateFacet.sol";
+import { ITransferAssetFacet } from "../lib/diamond-pau/src/facets/transfer-asset/ITransferAssetFacet.sol";
+import { IUniswapV3Facet }     from "../lib/diamond-pau/src/facets/uniswap-v3/IUniswapV3Facet.sol";
+import { IUniswapV4Facet }     from "../lib/diamond-pau/src/facets/uniswap-v4/IUniswapV4Facet.sol";
+import { IUSDSFacet }          from "../lib/diamond-pau/src/facets/usds/IUSDSFacet.sol";
+import { IWEETHFacet }         from "../lib/diamond-pau/src/facets/weeth/IWEETHFacet.sol";
+import { IWrapProxyETHFacet }  from "../lib/diamond-pau/src/facets/wrap-proxy-eth/IWrapProxyETHFacet.sol";
+import { IWSTETHFacet }        from "../lib/diamond-pau/src/facets/wsteth/IWSTETHFacet.sol";
+
+import { IAaveFacetExternal }          from "./interfaces/ExternalFacetInterfaces.sol";
+import { IBasinFacetExternal }         from "./interfaces/ExternalFacetInterfaces.sol";
+import { ICCTPFacetExternal }          from "./interfaces/ExternalFacetInterfaces.sol";
+import { ICentrifugeFacetExternal }    from "./interfaces/ExternalFacetInterfaces.sol";
+import { ICurveFacetExternal }         from "./interfaces/ExternalFacetInterfaces.sol";
+import { IDAIUSDSFacetExternal }       from "./interfaces/ExternalFacetInterfaces.sol";
+import { IERC4626FacetExternal }       from "./interfaces/ExternalFacetInterfaces.sol";
+import { IERC7540FacetExternal }       from "./interfaces/ExternalFacetInterfaces.sol";
+import { IEthenaFacetExternal }        from "./interfaces/ExternalFacetInterfaces.sol";
+import { IFarmFacetExternal }          from "./interfaces/ExternalFacetInterfaces.sol";
+import { ILayerZeroFacetExternal }     from "./interfaces/ExternalFacetInterfaces.sol";
+import { IMapleFacetExternal }         from "./interfaces/ExternalFacetInterfaces.sol";
+import { IMerklFacetExternal }         from "./interfaces/ExternalFacetInterfaces.sol";
+import { IOTCFacetExternal }           from "./interfaces/ExternalFacetInterfaces.sol";
+import { IPendleFacetExternal }        from "./interfaces/ExternalFacetInterfaces.sol";
+import { IPSMFacetExternal }           from "./interfaces/ExternalFacetInterfaces.sol";
+import { ISparkVaultFacetExternal }    from "./interfaces/ExternalFacetInterfaces.sol";
+import { ISuperstateFacetExternal }    from "./interfaces/ExternalFacetInterfaces.sol";
+import { ITransferAssetFacetExternal } from "./interfaces/ExternalFacetInterfaces.sol";
+import { IUniswapV3FacetExternal }     from "./interfaces/ExternalFacetInterfaces.sol";
+import { IUniswapV4FacetExternal }     from "./interfaces/ExternalFacetInterfaces.sol";
+import { IUSDSFacetExternal }          from "./interfaces/ExternalFacetInterfaces.sol";
+import { IWEETHFacetExternal }         from "./interfaces/ExternalFacetInterfaces.sol";
+import { IWrapProxyETHFacetExternal }  from "./interfaces/ExternalFacetInterfaces.sol";
+import { IWSTETHFacetExternal }        from "./interfaces/ExternalFacetInterfaces.sol";
+
+abstract contract DeployFacetsAndWire is Script {
+
+    using stdJson for string;
+
+    /**********************************************************************************************/
+    /*** State variables                                                                        ***/
+    /**********************************************************************************************/
+
+    Beacon internal beacon;
+
+    /**********************************************************************************************/
+    /*** Run function                                                                           ***/
+    /**********************************************************************************************/
+
+    function run() virtual public {
+        string memory env = vm.envString("ENV");
+
+        vm.setEnv("FOUNDRY_ROOT_CHAINID",             vm.toString(block.chainid));
+        vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", "true");
+
+        string memory config = ScriptTools.loadConfig(_configFacetFileSlug());
+
+        address admin = config.readAddress(".admin");
+
+        beacon = Beacon(config.readAddress(".beacon"));
+
+        console.log("%s\n  Env: %s", _logPrefix(), env);
+
+        vm.startBroadcast();
+
+        address deployer = msg.sender;
+
+        require(deployer != admin, "DeployFacetsAndWire/deployer-must-differ-from-admin");
+
+        // Step 1: deploy each facet and wire it through beacon.setIntegration.
+        // NOTE: Assuming beacon admin is deployer
+        _deployAndWireFacets();
+
+        // Step 2: Grant admin role to final admin, then revoke deployer.
+
+        beacon.grantRole(beacon.DEFAULT_ADMIN_ROLE(),  admin);
+        beacon.revokeRole(beacon.DEFAULT_ADMIN_ROLE(), deployer);
+
+        console.log("Beacon admin transferred to: ", admin);
+
+        vm.stopBroadcast();
+    }
+
+    /**********************************************************************************************/
+    /*** Virtual functions                                                                      ***/
+    /**********************************************************************************************/
+
+    function _deployAndWireFacets() internal virtual;
+
+    function _configFacetFileSlug() internal virtual returns (string memory);
+
+    function _logPrefix() internal virtual returns (string memory);
+
+    /**********************************************************************************************/
+    /*** Per-facet deploy + wire helpers                                                        ***/
+    /**********************************************************************************************/
+
+    function _deployAndWireAaveFacet() internal returns (address facet) {
+        facet = address(new AaveFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](7);
+
+        wires[0] = IEI.Wire(IAaveFacetExternal.aave_VERSION.selector,                 IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IAaveFacetExternal.aave_setMaxSlippage.selector,          IAaveFacet.setMaxSlippage.selector);
+        wires[2] = IEI.Wire(IAaveFacetExternal.aave_getMaxSlippage.selector,          IAaveFacet.getMaxSlippage.selector);
+        wires[3] = IEI.Wire(IAaveFacetExternal.aave_deposit.selector,                 IAaveFacet.deposit.selector);
+        wires[4] = IEI.Wire(IAaveFacetExternal.aave_withdraw.selector,                IAaveFacet.withdraw.selector);
+        wires[5] = IEI.Wire(IAaveFacetExternal.aave_getDepositRateLimitKey.selector,  IAaveFacet.getDepositRateLimitKey.selector);
+        wires[6] = IEI.Wire(IAaveFacetExternal.aave_getWithdrawRateLimitKey.selector, IAaveFacet.getWithdrawRateLimitKey.selector);
+
+        beacon.setIntegration("AAVE_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "aaveFacet", facet);
+    }
+
+    function _deployAndWireBasinFacet() internal returns (address facet) {
+        facet = address(new BasinFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](5);
+
+        wires[0] = IEI.Wire(IBasinFacetExternal.basin_VERSION.selector,                 IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IBasinFacetExternal.basin_deposit.selector,                 IBasinFacet.deposit.selector);
+        wires[2] = IEI.Wire(IBasinFacetExternal.basin_withdraw.selector,                IBasinFacet.withdraw.selector);
+        wires[3] = IEI.Wire(IBasinFacetExternal.basin_getDepositRateLimitKey.selector,  IBasinFacet.getDepositRateLimitKey.selector);
+        wires[4] = IEI.Wire(IBasinFacetExternal.basin_getWithdrawRateLimitKey.selector, IBasinFacet.getWithdrawRateLimitKey.selector);
+
+        beacon.setIntegration("BASIN_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "basinFacet", facet);
+    }
+
+    function _deployAndWireCCTPFacet(address cctp_, address usdc_) internal returns (address facet) {
+        facet = address(new CCTPFacet({
+            cctp_ : cctp_,
+            usdc_ : usdc_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](10);
+
+        wires[0] = IEI.Wire(ICCTPFacetExternal.cctp_VERSION.selector,                 IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(ICCTPFacetExternal.cctp_DESTINATION_CALLER.selector,      ICCTPFacet.DESTINATION_CALLER.selector);
+        wires[2] = IEI.Wire(ICCTPFacetExternal.cctp_MIN_FINALITY_THRESHOLD.selector,  ICCTPFacet.MIN_FINALITY_THRESHOLD.selector);
+        wires[3] = IEI.Wire(ICCTPFacetExternal.cctp_cctp.selector,                    ICCTPFacet.cctp.selector);
+        wires[4] = IEI.Wire(ICCTPFacetExternal.cctp_usdc.selector,                    ICCTPFacet.usdc.selector);
+        wires[5] = IEI.Wire(ICCTPFacetExternal.cctp_setDomainParameters.selector,     ICCTPFacet.setDomainParameters.selector);
+        wires[6] = IEI.Wire(ICCTPFacetExternal.cctp_transfer.selector,                ICCTPFacet.transfer.selector);
+        wires[7] = IEI.Wire(ICCTPFacetExternal.cctp_toCCTPRateLimitKey.selector,      ICCTPFacet.toCCTPRateLimitKey.selector);
+        wires[8] = IEI.Wire(ICCTPFacetExternal.cctp_getDomainParameters.selector,     ICCTPFacet.getDomainParameters.selector);
+        wires[9] = IEI.Wire(ICCTPFacetExternal.cctp_getToDomainRateLimitKey.selector, ICCTPFacet.getToDomainRateLimitKey.selector);
+
+        beacon.setIntegration("CCTP_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "cctpFacet", facet);
+    }
+
+    function _deployAndWireCentrifugeFacet() internal returns (address facet) {
+        facet = address(new CentrifugeFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](14);
+
+        wires[0]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_VERSION.selector,                           IFacet.VERSION.selector);
+        wires[1]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_REQUEST_ID.selector,                        ICentrifugeFacet.REQUEST_ID.selector);
+        wires[2]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_setRecipient.selector,                      ICentrifugeFacet.setRecipient.selector);
+        wires[3]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_cancelDepositRequest.selector,              ICentrifugeFacet.cancelDepositRequest.selector);
+        wires[4]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_claimCancelDepositRequest.selector,         ICentrifugeFacet.claimCancelDepositRequest.selector);
+        wires[5]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_cancelRedeemRequest.selector,               ICentrifugeFacet.cancelRedeemRequest.selector);
+        wires[6]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_claimCancelRedeemRequest.selector,          ICentrifugeFacet.claimCancelRedeemRequest.selector);
+        wires[7]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_transferShares.selector,                    ICentrifugeFacet.transferShares.selector);
+        wires[8]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_getRecipient.selector,                      ICentrifugeFacet.getRecipient.selector);
+        wires[9]  = IEI.Wire(ICentrifugeFacetExternal.centrifuge_getCancelDepositRateLimitKey.selector,      ICentrifugeFacet.getCancelDepositRateLimitKey.selector);
+        wires[10] = IEI.Wire(ICentrifugeFacetExternal.centrifuge_getClaimCancelDepositRateLimitKey.selector, ICentrifugeFacet.getClaimCancelDepositRateLimitKey.selector);
+        wires[11] = IEI.Wire(ICentrifugeFacetExternal.centrifuge_getCancelRedeemRateLimitKey.selector,       ICentrifugeFacet.getCancelRedeemRateLimitKey.selector);
+        wires[12] = IEI.Wire(ICentrifugeFacetExternal.centrifuge_getClaimCancelRedeemRateLimitKey.selector,  ICentrifugeFacet.getClaimCancelRedeemRateLimitKey.selector);
+        wires[13] = IEI.Wire(ICentrifugeFacetExternal.centrifuge_getTransferRateLimitKey.selector,           ICentrifugeFacet.getTransferRateLimitKey.selector);
+
+        beacon.setIntegration("CENTRIFUGE_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "centrifugeFacet", facet);
+    }
+
+    function _deployAndWireCurveFacet() internal returns (address facet) {
+        facet = address(new CurveFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](11);
+
+        wires[0]  = IEI.Wire(ICurveFacetExternal.curve_VERSION.selector,                          IFacet.VERSION.selector);
+        wires[1]  = IEI.Wire(ICurveFacetExternal.curve_setMaxSlippage.selector,                   ICurveFacet.setMaxSlippage.selector);
+        wires[2]  = IEI.Wire(ICurveFacetExternal.curve_getMaxSlippage.selector,                   ICurveFacet.getMaxSlippage.selector);
+        wires[3]  = IEI.Wire(ICurveFacetExternal.curve_swap.selector,                             ICurveFacet.swap.selector);
+        wires[4]  = IEI.Wire(ICurveFacetExternal.curve_addLiquidity.selector,                     ICurveFacet.addLiquidity.selector);
+        wires[5]  = IEI.Wire(ICurveFacetExternal.curve_removeLiquidity.selector,                  ICurveFacet.removeLiquidity.selector);
+        wires[6]  = IEI.Wire(ICurveFacetExternal.curve_getAggregateDepositRateLimitKey.selector,  ICurveFacet.getAggregateDepositRateLimitKey.selector);
+        wires[7]  = IEI.Wire(ICurveFacetExternal.curve_getAssetDepositRateLimitKey.selector,      ICurveFacet.getAssetDepositRateLimitKey.selector);
+        wires[8]  = IEI.Wire(ICurveFacetExternal.curve_getSwapRateLimitKey.selector,              ICurveFacet.getSwapRateLimitKey.selector);
+        wires[9]  = IEI.Wire(ICurveFacetExternal.curve_getAggregateWithdrawRateLimitKey.selector, ICurveFacet.getAggregateWithdrawRateLimitKey.selector);
+        wires[10] = IEI.Wire(ICurveFacetExternal.curve_getAssetWithdrawRateLimitKey.selector,     ICurveFacet.getAssetWithdrawRateLimitKey.selector);
+
+        beacon.setIntegration("CURVE_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "curveFacet", facet);
+    }
+
+    function _deployAndWireDAIUSDSFacet(
+        address dai_,
+        address daiUSDS_,
+        address usds_
+    ) internal returns (address facet) {
+        facet = address(new DAIUSDSFacet({
+            dai_     : dai_,
+            daiUSDS_ : daiUSDS_,
+            usds_    : usds_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](8);
+
+        wires[0] = IEI.Wire(IDAIUSDSFacetExternal.daiUSDS_VERSION.selector,                   IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IDAIUSDSFacetExternal.daiUSDS_dai.selector,                       IDAIUSDSFacet.dai.selector);
+        wires[2] = IEI.Wire(IDAIUSDSFacetExternal.daiUSDS_daiUSDS.selector,                   IDAIUSDSFacet.daiUSDS.selector);
+        wires[3] = IEI.Wire(IDAIUSDSFacetExternal.daiUSDS_usds.selector,                      IDAIUSDSFacet.usds.selector);
+        wires[4] = IEI.Wire(IDAIUSDSFacetExternal.daiUSDS_swapUSDSToDAI.selector,             IDAIUSDSFacet.swapUSDSToDAI.selector);
+        wires[5] = IEI.Wire(IDAIUSDSFacetExternal.daiUSDS_swapDAIToUSDS.selector,             IDAIUSDSFacet.swapDAIToUSDS.selector);
+        wires[6] = IEI.Wire(IDAIUSDSFacetExternal.daiUSDS_daiToUSDSSwapRateLimitKey.selector, IDAIUSDSFacet.daiToUSDSSwapRateLimitKey.selector);
+        wires[7] = IEI.Wire(IDAIUSDSFacetExternal.daiUSDS_usdsToDAISwapRateLimitKey.selector, IDAIUSDSFacet.usdsToDAISwapRateLimitKey.selector);
+
+        beacon.setIntegration("DAIUSDS_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "daiUSDSFacet", facet);
+    }
+
+    function _deployAndWireERC4626Facet() internal returns (address facet) {
+        facet = address(new ERC4626Facet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](9);
+
+        wires[0] = IEI.Wire(IERC4626FacetExternal.erc4626_VERSION.selector,                 IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IERC4626FacetExternal.erc4626_setMaxExchangeRate.selector,      IERC4626Facet.setMaxExchangeRate.selector);
+        wires[2] = IEI.Wire(IERC4626FacetExternal.erc4626_deposit.selector,                 IERC4626Facet.deposit.selector);
+        wires[3] = IEI.Wire(IERC4626FacetExternal.erc4626_withdraw.selector,                IERC4626Facet.withdraw.selector);
+        wires[4] = IEI.Wire(IERC4626FacetExternal.erc4626_redeem.selector,                  IERC4626Facet.redeem.selector);
+        wires[5] = IEI.Wire(IERC4626FacetExternal.erc4626_EXCHANGE_RATE_PRECISION.selector, IERC4626Facet.EXCHANGE_RATE_PRECISION.selector);
+        wires[6] = IEI.Wire(IERC4626FacetExternal.erc4626_getMaxExchangeRate.selector,      IERC4626Facet.getMaxExchangeRate.selector);
+        wires[7] = IEI.Wire(IERC4626FacetExternal.erc4626_getDepositRateLimitKey.selector,  IERC4626Facet.getDepositRateLimitKey.selector);
+        wires[8] = IEI.Wire(IERC4626FacetExternal.erc4626_getWithdrawRateLimitKey.selector, IERC4626Facet.getWithdrawRateLimitKey.selector);
+
+        beacon.setIntegration("ERC4626_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "erc4626Facet", facet);
+    }
+
+    function _deployAndWireERC7540Facet() internal returns (address facet) {
+        facet = address(new ERC7540Facet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](9);
+
+        wires[0] = IEI.Wire(IERC7540FacetExternal.erc7540_VERSION.selector,                       IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IERC7540FacetExternal.erc7540_requestDeposit.selector,                IERC7540Facet.requestDeposit.selector);
+        wires[2] = IEI.Wire(IERC7540FacetExternal.erc7540_claimDeposit.selector,                  IERC7540Facet.claimDeposit.selector);
+        wires[3] = IEI.Wire(IERC7540FacetExternal.erc7540_requestRedeem.selector,                 IERC7540Facet.requestRedeem.selector);
+        wires[4] = IEI.Wire(IERC7540FacetExternal.erc7540_claimRedeem.selector,                   IERC7540Facet.claimRedeem.selector);
+        wires[5] = IEI.Wire(IERC7540FacetExternal.erc7540_getRequestDepositRateLimitKey.selector, IERC7540Facet.getRequestDepositRateLimitKey.selector);
+        wires[6] = IEI.Wire(IERC7540FacetExternal.erc7540_getClaimDepositRateLimitKey.selector,   IERC7540Facet.getClaimDepositRateLimitKey.selector);
+        wires[7] = IEI.Wire(IERC7540FacetExternal.erc7540_getRequestRedeemRateLimitKey.selector,  IERC7540Facet.getRequestRedeemRateLimitKey.selector);
+        wires[8] = IEI.Wire(IERC7540FacetExternal.erc7540_getClaimRedeemRateLimitKey.selector,    IERC7540Facet.getClaimRedeemRateLimitKey.selector);
+
+        beacon.setIntegration("ERC7540_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "erc7540Facet", facet);
+    }
+
+    function _deployAndWireEthenaFacet(
+        address minter_,
+        address susde_,
+        address usdc_,
+        address usde_
+    ) internal returns (address facet) {
+        facet = address(new EthenaFacet({
+            minter_ : minter_,
+            susde_  : susde_,
+            usdc_   : usdc_,
+            usde_   : usde_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](18);
+
+        wires[0]  = IEI.Wire(IEthenaFacetExternal.ethena_VERSION.selector,                           IFacet.VERSION.selector);
+        wires[1]  = IEI.Wire(IEthenaFacetExternal.ethena_minter.selector,                            IEthenaFacet.minter.selector);
+        wires[2]  = IEI.Wire(IEthenaFacetExternal.ethena_susde.selector,                             IEthenaFacet.susde.selector);
+        wires[3]  = IEI.Wire(IEthenaFacetExternal.ethena_usdc.selector,                              IEthenaFacet.usdc.selector);
+        wires[4]  = IEI.Wire(IEthenaFacetExternal.ethena_usde.selector,                              IEthenaFacet.usde.selector);
+        wires[5]  = IEI.Wire(IEthenaFacetExternal.ethena_setDelegatedSigner.selector,                IEthenaFacet.setDelegatedSigner.selector);
+        wires[6]  = IEI.Wire(IEthenaFacetExternal.ethena_removeDelegatedSigner.selector,             IEthenaFacet.removeDelegatedSigner.selector);
+        wires[7]  = IEI.Wire(IEthenaFacetExternal.ethena_prepareMint.selector,                       IEthenaFacet.prepareMint.selector);
+        wires[8]  = IEI.Wire(IEthenaFacetExternal.ethena_prepareBurn.selector,                       IEthenaFacet.prepareBurn.selector);
+        wires[9]  = IEI.Wire(IEthenaFacetExternal.ethena_cooldownAssets.selector,                    IEthenaFacet.cooldownAssets.selector);
+        wires[10] = IEI.Wire(IEthenaFacetExternal.ethena_cooldownShares.selector,                    IEthenaFacet.cooldownShares.selector);
+        wires[11] = IEI.Wire(IEthenaFacetExternal.ethena_unstake.selector,                           IEthenaFacet.unstake.selector);
+        wires[12] = IEI.Wire(IEthenaFacetExternal.ethena_setDelegatedSignerRateLimitKey.selector,    IEthenaFacet.setDelegatedSignerRateLimitKey.selector);
+        wires[13] = IEI.Wire(IEthenaFacetExternal.ethena_removeDelegatedSignerRateLimitKey.selector, IEthenaFacet.removeDelegatedSignerRateLimitKey.selector);
+        wires[14] = IEI.Wire(IEthenaFacetExternal.ethena_mintRateLimitKey.selector,                  IEthenaFacet.mintRateLimitKey.selector);
+        wires[15] = IEI.Wire(IEthenaFacetExternal.ethena_burnRateLimitKey.selector,                  IEthenaFacet.burnRateLimitKey.selector);
+        wires[16] = IEI.Wire(IEthenaFacetExternal.ethena_cooldownRateLimitKey.selector,              IEthenaFacet.cooldownRateLimitKey.selector);
+        wires[17] = IEI.Wire(IEthenaFacetExternal.ethena_unstakeRateLimitKey.selector,               IEthenaFacet.unstakeRateLimitKey.selector);
+
+        beacon.setIntegration("ETHENA_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "ethenaFacet", facet);
+    }
+
+    function _deployAndWireFarmFacet() internal returns (address facet) {
+        facet = address(new FarmFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](7);
+
+        wires[0] = IEI.Wire(IFarmFacetExternal.farm_VERSION.selector,                    IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IFarmFacetExternal.farm_deposit.selector,                    IFarmFacet.deposit.selector);
+        wires[2] = IEI.Wire(IFarmFacetExternal.farm_claimReward.selector,                IFarmFacet.claimReward.selector);
+        wires[3] = IEI.Wire(IFarmFacetExternal.farm_withdraw.selector,                   IFarmFacet.withdraw.selector);
+        wires[4] = IEI.Wire(IFarmFacetExternal.farm_getClaimRewardRateLimitKey.selector, IFarmFacet.getClaimRewardRateLimitKey.selector);
+        wires[5] = IEI.Wire(IFarmFacetExternal.farm_getDepositRateLimitKey.selector,     IFarmFacet.getDepositRateLimitKey.selector);
+        wires[6] = IEI.Wire(IFarmFacetExternal.farm_getWithdrawRateLimitKey.selector,    IFarmFacet.getWithdrawRateLimitKey.selector);
+
+        beacon.setIntegration("FARM_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "farmFacet", facet);
+    }
+
+    function _deployAndWireLayerZeroFacet() internal returns (address facet) {
+        facet = address(new LayerZeroFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](6);
+
+        wires[0] = IEI.Wire(ILayerZeroFacetExternal.layerZero_VERSION.selector,                 IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(ILayerZeroFacetExternal.layerZero_setRecipient.selector,            ILayerZeroFacet.setRecipient.selector);
+        wires[2] = IEI.Wire(ILayerZeroFacetExternal.layerZero_transfer.selector,                ILayerZeroFacet.transfer.selector);
+        wires[3] = IEI.Wire(ILayerZeroFacetExternal.layerZero_getRecipient.selector,            ILayerZeroFacet.getRecipient.selector);
+        wires[4] = IEI.Wire(ILayerZeroFacetExternal.layerZero_getTransferRateLimitKey.selector, ILayerZeroFacet.getTransferRateLimitKey.selector);
+        wires[5] = IEI.Wire(ILayerZeroFacetExternal.layerZero_quoteTransfer.selector,           ILayerZeroFacet.quoteTransfer.selector);
+
+        beacon.setIntegration("LAYER_ZERO_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "layerZeroFacet", facet);
+    }
+
+    function _deployAndWireMapleFacet() internal returns (address facet) {
+        facet = address(new MapleFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](5);
+
+        wires[0] = IEI.Wire(IMapleFacetExternal.maple_VERSION.selector,                      IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IMapleFacetExternal.maple_requestRedemption.selector,            IMapleFacet.requestRedemption.selector);
+        wires[2] = IEI.Wire(IMapleFacetExternal.maple_cancelRedemption.selector,             IMapleFacet.cancelRedemption.selector);
+        wires[3] = IEI.Wire(IMapleFacetExternal.maple_getCancelRedeemRateLimitKey.selector,  IMapleFacet.getCancelRedeemRateLimitKey.selector);
+        wires[4] = IEI.Wire(IMapleFacetExternal.maple_getRequestRedeemRateLimitKey.selector, IMapleFacet.getRequestRedeemRateLimitKey.selector);
+
+        beacon.setIntegration("MAPLE_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "mapleFacet", facet);
+    }
+
+    function _deployAndWireMerklFacet() internal returns (address facet) {
+        facet = address(new MerklFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](3);
+
+        wires[0] = IEI.Wire(IMerklFacetExternal.merkl_VERSION.selector,                       IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IMerklFacetExternal.merkl_toggleOperator.selector,                IMerklFacet.toggleOperator.selector);
+        wires[2] = IEI.Wire(IMerklFacetExternal.merkl_getToggleOperatorRateLimitKey.selector, IMerklFacet.getToggleOperatorRateLimitKey.selector);
+
+        beacon.setIntegration("MERKL_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "merklFacet", facet);
+    }
+
+    function _deployAndWireOTCFacet() internal returns (address facet) {
+        facet = address(new OTCFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](14);
+
+        wires[0]  = IEI.Wire(IOTCFacetExternal.otc_VERSION.selector,              IFacet.VERSION.selector);
+        wires[1]  = IEI.Wire(IOTCFacetExternal.otc_setMaxSlippage.selector,       IOTCFacet.setMaxSlippage.selector);
+        wires[2]  = IEI.Wire(IOTCFacetExternal.otc_setBuffer.selector,            IOTCFacet.setBuffer.selector);
+        wires[3]  = IEI.Wire(IOTCFacetExternal.otc_setRechargeRate.selector,      IOTCFacet.setRechargeRate.selector);
+        wires[4]  = IEI.Wire(IOTCFacetExternal.otc_send.selector,                 IOTCFacet.send.selector);
+        wires[5]  = IEI.Wire(IOTCFacetExternal.otc_claim.selector,                IOTCFacet.claim.selector);
+        wires[6]  = IEI.Wire(IOTCFacetExternal.otc_getBuffer.selector,            IOTCFacet.getBuffer.selector);
+        wires[7]  = IEI.Wire(IOTCFacetExternal.otc_getMaxSlippage.selector,       IOTCFacet.getMaxSlippage.selector);
+        wires[8]  = IEI.Wire(IOTCFacetExternal.otc_getRechargeRate.selector,      IOTCFacet.getRechargeRate.selector);
+        wires[9]  = IEI.Wire(IOTCFacetExternal.otc_getState.selector,             IOTCFacet.getState.selector);
+        wires[10] = IEI.Wire(IOTCFacetExternal.otc_getClaimWithRecharge.selector, IOTCFacet.getClaimWithRecharge.selector);
+        wires[11] = IEI.Wire(IOTCFacetExternal.otc_getIsSwapReady.selector,       IOTCFacet.getIsSwapReady.selector);
+        wires[12] = IEI.Wire(IOTCFacetExternal.otc_getSendRateLimitKey.selector,  IOTCFacet.getSendRateLimitKey.selector);
+        wires[13] = IEI.Wire(IOTCFacetExternal.otc_getClaimRateLimitKey.selector, IOTCFacet.getClaimRateLimitKey.selector);
+
+        beacon.setIntegration("OTC_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "otcFacet", facet);
+    }
+
+    function _deployAndWirePendleFacet(address router_) internal returns (address facet) {
+        facet = address(new PendleFacet({
+            router_ : router_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](4);
+
+        wires[0] = IEI.Wire(IPendleFacetExternal.pendle_VERSION.selector,               IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IPendleFacetExternal.pendle_router.selector,                IPendleFacet.router.selector);
+        wires[2] = IEI.Wire(IPendleFacetExternal.pendle_redeem.selector,                IPendleFacet.redeem.selector);
+        wires[3] = IEI.Wire(IPendleFacetExternal.pendle_getRedeemRateLimitKey.selector, IPendleFacet.getRedeemRateLimitKey.selector);
+
+        beacon.setIntegration("PENDLE_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "pendleFacet", facet);
+    }
+
+    function _deployAndWirePSMFacet(
+        address dai_,
+        address daiUSDS_,
+        address psm_,
+        address usdc_,
+        address usds_
+    ) internal returns (address facet) {
+        facet = address(new PSMFacet({
+            dai_     : dai_,
+            daiUSDS_ : daiUSDS_,
+            psm_     : psm_,
+            usdc_    : usdc_,
+            usds_    : usds_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](11);
+
+        wires[0]  = IEI.Wire(IPSMFacetExternal.psm_VERSION.selector,                    IFacet.VERSION.selector);
+        wires[1]  = IEI.Wire(IPSMFacetExternal.psm_dai.selector,                        IPSMFacet.dai.selector);
+        wires[2]  = IEI.Wire(IPSMFacetExternal.psm_daiUSDS.selector,                    IPSMFacet.daiUSDS.selector);
+        wires[3]  = IEI.Wire(IPSMFacetExternal.psm_psm.selector,                        IPSMFacet.psm.selector);
+        wires[4]  = IEI.Wire(IPSMFacetExternal.psm_usdc.selector,                       IPSMFacet.usdc.selector);
+        wires[5]  = IEI.Wire(IPSMFacetExternal.psm_usds.selector,                       IPSMFacet.usds.selector);
+        wires[6]  = IEI.Wire(IPSMFacetExternal.psm_swapUSDSToUSDC.selector,             IPSMFacet.swapUSDSToUSDC.selector);
+        wires[7]  = IEI.Wire(IPSMFacetExternal.psm_swapUSDCToUSDS.selector,             IPSMFacet.swapUSDCToUSDS.selector);
+        wires[8]  = IEI.Wire(IPSMFacetExternal.psm_to18ConversionFactor.selector,       IPSMFacet.to18ConversionFactor.selector);
+        wires[9]  = IEI.Wire(IPSMFacetExternal.psm_usdcToUSDSSwapRateLimitKey.selector, IPSMFacet.usdcToUSDSSwapRateLimitKey.selector);
+        wires[10] = IEI.Wire(IPSMFacetExternal.psm_usdsToUSDCSwapRateLimitKey.selector, IPSMFacet.usdsToUSDCSwapRateLimitKey.selector);
+
+        beacon.setIntegration("PSM_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "psmFacet", facet);
+    }
+
+    function _deployAndWireSparkVaultFacet() internal returns (address facet) {
+        facet = address(new SparkVaultFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](3);
+
+        wires[0] = IEI.Wire(ISparkVaultFacetExternal.sparkVault_VERSION.selector,             IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(ISparkVaultFacetExternal.sparkVault_take.selector,                ISparkVaultFacet.take.selector);
+        wires[2] = IEI.Wire(ISparkVaultFacetExternal.sparkVault_getTakeRateLimitKey.selector, ISparkVaultFacet.getTakeRateLimitKey.selector);
+
+        beacon.setIntegration("SPARK_VAULT_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "sparkVaultFacet", facet);
+    }
+
+    function _deployAndWireSuperstateFacet(address usdc_, address ustb_) internal returns (address facet) {
+        facet = address(new SuperstateFacet({
+            usdc_ : usdc_,
+            ustb_ : ustb_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](5);
+
+        wires[0] = IEI.Wire(ISuperstateFacetExternal.superstate_VERSION.selector,               IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(ISuperstateFacetExternal.superstate_usdc.selector,                  ISuperstateFacet.usdc.selector);
+        wires[2] = IEI.Wire(ISuperstateFacetExternal.superstate_ustb.selector,                  ISuperstateFacet.ustb.selector);
+        wires[3] = IEI.Wire(ISuperstateFacetExternal.superstate_subscribe.selector,             ISuperstateFacet.subscribe.selector);
+        wires[4] = IEI.Wire(ISuperstateFacetExternal.superstate_subscribeRateLimitKey.selector, ISuperstateFacet.subscribeRateLimitKey.selector);
+
+        beacon.setIntegration("SUPERSTATE_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "superstateFacet", facet);
+    }
+
+    function _deployAndWireTransferAssetFacet() internal returns (address facet) {
+        facet = address(new TransferAssetFacet());
+
+        IEI.Wire[] memory wires = new IEI.Wire[](3);
+
+        wires[0] = IEI.Wire(ITransferAssetFacetExternal.transferAsset_VERSION.selector,                 IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(ITransferAssetFacetExternal.transferAsset_transfer.selector,                ITransferAssetFacet.transfer.selector);
+        wires[2] = IEI.Wire(ITransferAssetFacetExternal.transferAsset_getTransferRateLimitKey.selector, ITransferAssetFacet.getTransferRateLimitKey.selector);
+
+        beacon.setIntegration("TRANSFER_ASSET_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "transferAssetFacet", facet);
+    }
+
+    function _deployAndWireUniswapV3Facet(address positionManager_, address router_) internal returns (address facet) {
+        facet = address(new UniswapV3Facet({
+            positionManager_ : positionManager_,
+            router_          : router_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](23);
+
+        wires[0]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_VERSION.selector,                          IFacet.VERSION.selector);
+        wires[1]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_MAX_TICK_DELTA.selector,                   IUniswapV3Facet.MAX_TICK_DELTA.selector);
+        wires[2]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_MIN_TICK.selector,                         IUniswapV3Facet.MIN_TICK.selector);
+        wires[3]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_MAX_TICK.selector,                         IUniswapV3Facet.MAX_TICK.selector);
+        wires[4]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_positionManager.selector,                  IUniswapV3Facet.positionManager.selector);
+        wires[5]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_router.selector,                           IUniswapV3Facet.router.selector);
+        wires[6]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_setMaxSlippage.selector,                   IUniswapV3Facet.setMaxSlippage.selector);
+        wires[7]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_setMaxTickDelta.selector,                  IUniswapV3Facet.setMaxTickDelta.selector);
+        wires[8]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_setLiquidityLowerTickBound.selector,       IUniswapV3Facet.setLiquidityLowerTickBound.selector);
+        wires[9]  = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_setLiquidityUpperTickBound.selector,       IUniswapV3Facet.setLiquidityUpperTickBound.selector);
+        wires[10] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_setTWAPSecondsAgo.selector,                IUniswapV3Facet.setTWAPSecondsAgo.selector);
+        wires[11] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_swap.selector,                             IUniswapV3Facet.swap.selector);
+        wires[12] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_addLiquidity.selector,                     IUniswapV3Facet.addLiquidity.selector);
+        wires[13] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_removeLiquidity.selector,                  IUniswapV3Facet.removeLiquidity.selector);
+        wires[14] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_getAggregateDepositRateLimitKey.selector,  IUniswapV3Facet.getAggregateDepositRateLimitKey.selector);
+        wires[15] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_getAssetDepositRateLimitKey.selector,      IUniswapV3Facet.getAssetDepositRateLimitKey.selector);
+        wires[16] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_getLiquidityTickBounds.selector,           IUniswapV3Facet.getLiquidityTickBounds.selector);
+        wires[17] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_getMaxSlippage.selector,                   IUniswapV3Facet.getMaxSlippage.selector);
+        wires[18] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_getMaxTickDelta.selector,                  IUniswapV3Facet.getMaxTickDelta.selector);
+        wires[19] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_getSwapRateLimitKey.selector,              IUniswapV3Facet.getSwapRateLimitKey.selector);
+        wires[20] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_getTWAPSecondsAgo.selector,                IUniswapV3Facet.getTWAPSecondsAgo.selector);
+        wires[21] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_getAggregateWithdrawRateLimitKey.selector, IUniswapV3Facet.getAggregateWithdrawRateLimitKey.selector);
+        wires[22] = IEI.Wire(IUniswapV3FacetExternal.uniswapV3_getAssetWithdrawRateLimitKey.selector,     IUniswapV3Facet.getAssetWithdrawRateLimitKey.selector);
+
+        beacon.setIntegration("UNISWAP_V3_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "uniswapV3Facet", facet);
+    }
+
+    function _deployAndWireUniswapV4Facet(
+        address permit2_,
+        address positionManager_,
+        address router_
+    ) internal returns (address facet) {
+        facet = address(new UniswapV4Facet({
+            permit2_         : permit2_,
+            positionManager_ : positionManager_,
+            router_          : router_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](17);
+
+        wires[0]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_VERSION.selector,                          IFacet.VERSION.selector);
+        wires[1]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_permit2.selector,                          IUniswapV4Facet.permit2.selector);
+        wires[2]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_positionManager.selector,                  IUniswapV4Facet.positionManager.selector);
+        wires[3]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_router.selector,                           IUniswapV4Facet.router.selector);
+        wires[4]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_setMaxSlippage.selector,                   IUniswapV4Facet.setMaxSlippage.selector);
+        wires[5]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_setTickLimits.selector,                    IUniswapV4Facet.setTickLimits.selector);
+        wires[6]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_mintPosition.selector,                     IUniswapV4Facet.mintPosition.selector);
+        wires[7]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_increasePosition.selector,                 IUniswapV4Facet.increasePosition.selector);
+        wires[8]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_decreasePosition.selector,                 IUniswapV4Facet.decreasePosition.selector);
+        wires[9]  = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_swap.selector,                             IUniswapV4Facet.swap.selector);
+        wires[10] = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_getAggregateDepositRateLimitKey.selector,  IUniswapV4Facet.getAggregateDepositRateLimitKey.selector);
+        wires[11] = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_getAssetDepositRateLimitKey.selector,      IUniswapV4Facet.getAssetDepositRateLimitKey.selector);
+        wires[12] = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_getMaxSlippage.selector,                   IUniswapV4Facet.getMaxSlippage.selector);
+        wires[13] = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_getSwapRateLimitKey.selector,              IUniswapV4Facet.getSwapRateLimitKey.selector);
+        wires[14] = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_getTickLimits.selector,                    IUniswapV4Facet.getTickLimits.selector);
+        wires[15] = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_getAggregateWithdrawRateLimitKey.selector, IUniswapV4Facet.getAggregateWithdrawRateLimitKey.selector);
+        wires[16] = IEI.Wire(IUniswapV4FacetExternal.uniswapV4_getAssetWithdrawRateLimitKey.selector,     IUniswapV4Facet.getAssetWithdrawRateLimitKey.selector);
+
+        beacon.setIntegration("UNISWAP_V4_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "uniswapV4Facet", facet);
+    }
+
+    function _deployAndWireUSDSFacet(address usds_) internal returns (address facet) {
+        facet = address(new USDSFacet({
+            usds_ : usds_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](8);
+
+        wires[0] = IEI.Wire(IUSDSFacetExternal.usds_VERSION.selector,          IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IUSDSFacetExternal.usds_usds.selector,             IUSDSFacet.usds.selector);
+        wires[2] = IEI.Wire(IUSDSFacetExternal.usds_setVault.selector,         IUSDSFacet.setVault.selector);
+        wires[3] = IEI.Wire(IUSDSFacetExternal.usds_mint.selector,             IUSDSFacet.mint.selector);
+        wires[4] = IEI.Wire(IUSDSFacetExternal.usds_burn.selector,             IUSDSFacet.burn.selector);
+        wires[5] = IEI.Wire(IUSDSFacetExternal.usds_vault.selector,            IUSDSFacet.vault.selector);
+        wires[6] = IEI.Wire(IUSDSFacetExternal.usds_mintRateLimitKey.selector, IUSDSFacet.mintRateLimitKey.selector);
+        wires[7] = IEI.Wire(IUSDSFacetExternal.usds_burnRateLimitKey.selector, IUSDSFacet.burnRateLimitKey.selector);
+
+        beacon.setIntegration("USDS_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "usdsFacet", facet);
+    }
+
+    function _deployAndWireWEETHFacet(address weeth_, address weth_) internal returns (address facet) {
+        facet = address(new WEETHFacet({
+            weeth_ : weeth_,
+            weth_  : weth_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](9);
+
+        wires[0] = IEI.Wire(IWEETHFacetExternal.weeth_VERSION.selector,                        IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IWEETHFacetExternal.weeth_weeth.selector,                          IWEETHFacet.weeth.selector);
+        wires[2] = IEI.Wire(IWEETHFacetExternal.weeth_weth.selector,                           IWEETHFacet.weth.selector);
+        wires[3] = IEI.Wire(IWEETHFacetExternal.weeth_deposit.selector,                        IWEETHFacet.deposit.selector);
+        wires[4] = IEI.Wire(IWEETHFacetExternal.weeth_requestWithdraw.selector,                IWEETHFacet.requestWithdraw.selector);
+        wires[5] = IEI.Wire(IWEETHFacetExternal.weeth_claimWithdrawal.selector,                IWEETHFacet.claimWithdrawal.selector);
+        wires[6] = IEI.Wire(IWEETHFacetExternal.weeth_getDepositRateLimitKey.selector,         IWEETHFacet.getDepositRateLimitKey.selector);
+        wires[7] = IEI.Wire(IWEETHFacetExternal.weeth_getRequestWithdrawRateLimitKey.selector, IWEETHFacet.getRequestWithdrawRateLimitKey.selector);
+        wires[8] = IEI.Wire(IWEETHFacetExternal.weeth_getClaimWithdrawRateLimitKey.selector,   IWEETHFacet.getClaimWithdrawRateLimitKey.selector);
+
+        beacon.setIntegration("WEETH_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "weethFacet", facet);
+    }
+
+    function _deployAndWireWrapProxyETHFacet(address weth_) internal returns (address facet) {
+        facet = address(new WrapProxyETHFacet({
+            weth_ : weth_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](4);
+
+        wires[0] = IEI.Wire(IWrapProxyETHFacetExternal.wrapProxyETH_VERSION.selector,          IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IWrapProxyETHFacetExternal.wrapProxyETH_weth.selector,             IWrapProxyETHFacet.weth.selector);
+        wires[2] = IEI.Wire(IWrapProxyETHFacetExternal.wrapProxyETH_wrapAll.selector,          IWrapProxyETHFacet.wrapAll.selector);
+        wires[3] = IEI.Wire(IWrapProxyETHFacetExternal.wrapProxyETH_wrapRateLimitKey.selector, IWrapProxyETHFacet.wrapRateLimitKey.selector);
+
+        beacon.setIntegration("WRAP_PROXY_ETH_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "wrapProxyETHFacet", facet);
+    }
+
+    function _deployAndWireWSTETHFacet(
+        address weth_,
+        address withdrawQueue_,
+        address wsteth_
+    ) internal returns (address facet) {
+        facet = address(new WSTETHFacet({
+            weth_          : weth_,
+            withdrawQueue_ : withdrawQueue_,
+            wsteth_        : wsteth_
+        }));
+
+        IEI.Wire[] memory wires = new IEI.Wire[](10);
+
+        wires[0] = IEI.Wire(IWSTETHFacetExternal.wsteth_VERSION.selector,                     IFacet.VERSION.selector);
+        wires[1] = IEI.Wire(IWSTETHFacetExternal.wsteth_weth.selector,                        IWSTETHFacet.weth.selector);
+        wires[2] = IEI.Wire(IWSTETHFacetExternal.wsteth_withdrawQueue.selector,               IWSTETHFacet.withdrawQueue.selector);
+        wires[3] = IEI.Wire(IWSTETHFacetExternal.wsteth_wsteth.selector,                      IWSTETHFacet.wsteth.selector);
+        wires[4] = IEI.Wire(IWSTETHFacetExternal.wsteth_deposit.selector,                     IWSTETHFacet.deposit.selector);
+        wires[5] = IEI.Wire(IWSTETHFacetExternal.wsteth_requestWithdraw.selector,             IWSTETHFacet.requestWithdraw.selector);
+        wires[6] = IEI.Wire(IWSTETHFacetExternal.wsteth_claimWithdrawal.selector,             IWSTETHFacet.claimWithdrawal.selector);
+        wires[7] = IEI.Wire(IWSTETHFacetExternal.wsteth_depositRateLimitKey.selector,         IWSTETHFacet.depositRateLimitKey.selector);
+        wires[8] = IEI.Wire(IWSTETHFacetExternal.wsteth_requestWithdrawRateLimitKey.selector, IWSTETHFacet.requestWithdrawRateLimitKey.selector);
+        wires[9] = IEI.Wire(IWSTETHFacetExternal.wsteth_claimWithdrawRateLimitKey.selector,   IWSTETHFacet.claimWithdrawRateLimitKey.selector);
+
+        beacon.setIntegration("WSTETH_FACET", IEI.Config({
+            facet : facet,
+            wires : wires
+        }));
+
+        ScriptTools.exportContract(_configFacetFileSlug(), "wstethFacet", facet);
+    }
+
+}
