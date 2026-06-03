@@ -7,9 +7,6 @@ import { ScriptTools } from "../lib/dss-test/src/ScriptTools.sol";
 
 import { IEnumerableIntegrations as IEI } from "../lib/diamond-pau/src/interfaces/IEnumerableIntegrations.sol";
 
-import { Ethereum }                  from "../lib/diamond-pau/lib/spark-address-registry/src/Ethereum.sol";
-import { Ethereum as GroveEthereum } from "../lib/diamond-pau/lib/grove-address-registry/src/Ethereum.sol";
-
 import { Beacon } from "../lib/diamond-pau/src/Beacon.sol";
 
 import { IFacet } from "../lib/diamond-pau/src/facets/IFacet.sol";
@@ -66,7 +63,6 @@ import { IWEETHFacet }         from "../lib/diamond-pau/src/facets/weeth/IWEETHF
 import { IWrapProxyETHFacet }  from "../lib/diamond-pau/src/facets/wrap-proxy-eth/IWrapProxyETHFacet.sol";
 import { IWSTETHFacet }        from "../lib/diamond-pau/src/facets/wsteth/IWSTETHFacet.sol";
 
-
 import { IAaveFacetExternal }          from "./interfaces/ExternalFacetInterfaces.sol";
 import { IBasinFacetExternal }         from "./interfaces/ExternalFacetInterfaces.sol";
 import { ICCTPFacetExternal }          from "./interfaces/ExternalFacetInterfaces.sol";
@@ -98,19 +94,6 @@ abstract contract DeployFacetsAndWire is Script {
     using stdJson for string;
 
     /**********************************************************************************************/
-    /*** Constants                                                                              ***/
-    /**********************************************************************************************/
-
-    // NOTE: From https://docs.uniswap.org/contracts/v3/reference/deployments/ethereum-deployments.
-    address internal constant _UNISWAP_V3_POSITION_MANAGER = 0xC36442b4a4522E871399CD717aBDD847Ab11FE88;
-    address internal constant _UNISWAP_V3_ROUTER           = 0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45;
-
-    // NOTE: From https://docs.uniswap.org/contracts/v4/deployments (Ethereum Mainnet).
-    address internal constant _PERMIT2                     = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
-    address internal constant _UNISWAP_V4_POSITION_MANAGER = 0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e;
-    address internal constant _UNISWAP_V4_ROUTER           = 0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af;
-
-    /**********************************************************************************************/
     /*** State variables                                                                        ***/
     /**********************************************************************************************/
 
@@ -126,9 +109,9 @@ abstract contract DeployFacetsAndWire is Script {
         vm.setEnv("FOUNDRY_ROOT_CHAINID",             vm.toString(block.chainid));
         vm.setEnv("FOUNDRY_EXPORTS_OVERWRITE_LATEST", "true");
 
-        string memory config   = ScriptTools.loadConfig(_configFacetFileSlug());
+        string memory config = ScriptTools.loadConfig(_configFacetFileSlug());
 
-        address admin  = config.readAddress(".admin");
+        address admin = config.readAddress(".admin");
 
         beacon = Beacon(config.readAddress(".beacon"));
 
@@ -208,10 +191,10 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "basinFacet", facet);
     }
 
-    function _deployAndWireCCTPFacet() internal returns (address facet) {
+    function _deployAndWireCCTPFacet(address cctp_, address usdc_) internal returns (address facet) {
         facet = address(new CCTPFacet({
-            cctp_ : Ethereum.CCTP_TOKEN_MESSENGER,
-            usdc_ : Ethereum.USDC
+            cctp_ : cctp_,
+            usdc_ : usdc_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](10);
@@ -288,11 +271,15 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "curveFacet", facet);
     }
 
-    function _deployAndWireDAIUSDSFacet() internal returns (address facet) {
+    function _deployAndWireDAIUSDSFacet(
+        address dai_,
+        address daiUSDS_,
+        address usds_
+    ) internal returns (address facet) {
         facet = address(new DAIUSDSFacet({
-            dai_     : Ethereum.DAI,
-            daiUSDS_ : Ethereum.DAI_USDS,
-            usds_    : Ethereum.USDS
+            dai_     : dai_,
+            daiUSDS_ : daiUSDS_,
+            usds_    : usds_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](8);
@@ -360,12 +347,17 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "erc7540Facet", facet);
     }
 
-    function _deployAndWireEthenaFacet() internal returns (address facet) {
+    function _deployAndWireEthenaFacet(
+        address minter_,
+        address susde_,
+        address usdc_,
+        address usde_
+    ) internal returns (address facet) {
         facet = address(new EthenaFacet({
-            minter_ : Ethereum.ETHENA_MINTER,
-            susde_  : Ethereum.SUSDE,
-            usdc_   : Ethereum.USDC,
-            usde_   : Ethereum.USDE
+            minter_ : minter_,
+            susde_  : susde_,
+            usdc_   : usdc_,
+            usde_   : usde_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](18);
@@ -502,9 +494,9 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "otcFacet", facet);
     }
 
-    function _deployAndWirePendleFacet() internal returns (address facet) {
+    function _deployAndWirePendleFacet(address router_) internal returns (address facet) {
         facet = address(new PendleFacet({
-            router_ : GroveEthereum.PENDLE_ROUTER
+            router_ : router_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](4);
@@ -522,13 +514,19 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "pendleFacet", facet);
     }
 
-    function _deployAndWirePSMFacet() internal returns (address facet) {
+    function _deployAndWirePSMFacet(
+        address dai_,
+        address daiUSDS_,
+        address psm_,
+        address usdc_,
+        address usds_
+    ) internal returns (address facet) {
         facet = address(new PSMFacet({
-            dai_     : Ethereum.DAI,
-            daiUSDS_ : Ethereum.DAI_USDS,
-            psm_     : Ethereum.PSM,
-            usdc_    : Ethereum.USDC,
-            usds_    : Ethereum.USDS
+            dai_     : dai_,
+            daiUSDS_ : daiUSDS_,
+            psm_     : psm_,
+            usdc_    : usdc_,
+            usds_    : usds_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](11);
@@ -570,10 +568,10 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "sparkVaultFacet", facet);
     }
 
-    function _deployAndWireSuperstateFacet() internal returns (address facet) {
+    function _deployAndWireSuperstateFacet(address usdc_, address ustb_) internal returns (address facet) {
         facet = address(new SuperstateFacet({
-            usdc_ : Ethereum.USDC,
-            ustb_ : Ethereum.USTB
+            usdc_ : usdc_,
+            ustb_ : ustb_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](5);
@@ -609,10 +607,10 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "transferAssetFacet", facet);
     }
 
-    function _deployAndWireUniswapV3Facet() internal returns (address facet) {
+    function _deployAndWireUniswapV3Facet(address positionManager_, address router_) internal returns (address facet) {
         facet = address(new UniswapV3Facet({
-            positionManager_ : _UNISWAP_V3_POSITION_MANAGER,
-            router_          : _UNISWAP_V3_ROUTER
+            positionManager_ : positionManager_,
+            router_          : router_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](23);
@@ -649,11 +647,15 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "uniswapV3Facet", facet);
     }
 
-    function _deployAndWireUniswapV4Facet() internal returns (address facet) {
+    function _deployAndWireUniswapV4Facet(
+        address permit2_,
+        address positionManager_,
+        address router_
+    ) internal returns (address facet) {
         facet = address(new UniswapV4Facet({
-            permit2_         : _PERMIT2,
-            positionManager_ : _UNISWAP_V4_POSITION_MANAGER,
-            router_          : _UNISWAP_V4_ROUTER
+            permit2_         : permit2_,
+            positionManager_ : positionManager_,
+            router_          : router_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](17);
@@ -684,9 +686,9 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "uniswapV4Facet", facet);
     }
 
-    function _deployAndWireUSDSFacet() internal returns (address facet) {
+    function _deployAndWireUSDSFacet(address usds_) internal returns (address facet) {
         facet = address(new USDSFacet({
-            usds_ : Ethereum.USDS
+            usds_ : usds_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](8);
@@ -708,10 +710,10 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "usdsFacet", facet);
     }
 
-    function _deployAndWireWEETHFacet() internal returns (address facet) {
+    function _deployAndWireWEETHFacet(address weeth_, address weth_) internal returns (address facet) {
         facet = address(new WEETHFacet({
-            weeth_ : Ethereum.WEETH,
-            weth_  : Ethereum.WETH
+            weeth_ : weeth_,
+            weth_  : weth_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](9);
@@ -734,9 +736,9 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "weethFacet", facet);
     }
 
-    function _deployAndWireWrapProxyETHFacet() internal returns (address facet) {
+    function _deployAndWireWrapProxyETHFacet(address weth_) internal returns (address facet) {
         facet = address(new WrapProxyETHFacet({
-            weth_ : Ethereum.WETH
+            weth_ : weth_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](4);
@@ -754,11 +756,15 @@ abstract contract DeployFacetsAndWire is Script {
         ScriptTools.exportContract(_configFacetFileSlug(), "wrapProxyETHFacet", facet);
     }
 
-    function _deployAndWireWSTETHFacet() internal returns (address facet) {
+    function _deployAndWireWSTETHFacet(
+        address weth_,
+        address withdrawQueue_,
+        address wsteth_
+    ) internal returns (address facet) {
         facet = address(new WSTETHFacet({
-            weth_          : Ethereum.WETH,
-            withdrawQueue_ : Ethereum.WSTETH_WITHDRAW_QUEUE,
-            wsteth_        : Ethereum.WSTETH
+            weth_          : weth_,
+            withdrawQueue_ : withdrawQueue_,
+            wsteth_        : wsteth_
         }));
 
         IEI.Wire[] memory wires = new IEI.Wire[](10);
