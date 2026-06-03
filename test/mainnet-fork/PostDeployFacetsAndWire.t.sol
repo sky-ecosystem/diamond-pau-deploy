@@ -39,10 +39,11 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
     address internal constant _UNISWAP_V4_POSITION_MANAGER = 0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e;
     address internal constant _UNISWAP_V4_ROUTER           = 0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af;
 
+    address internal constant BEACON = 0x9EA465978500399C6b4b9A356b14b00e6597e705;
+
     // Paste from script/output/1/wire-facets-mainnet-{env}-latest.json
     address internal constant DEPLOYER             = 0x1ca4ECaF0E13ca833c80dA835DEEa15e1684361d;
     address internal constant ADMIN                = 0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB;
-    address internal constant BEACON               = 0x9EA465978500399C6b4b9A356b14b00e6597e705;
     address internal constant AAVE_FACET           = 0x61714DcB2A00a2A38E8244BeaeaDC041611aFcdF;
     address internal constant BASIN_FACET          = 0x153A215BE3f11Cff096C5a1A58A6f6BD83E73FAC;
     address internal constant CCTP_FACET           = 0x2cDF2BD533ba084007aCC66406B556286f8782dF;
@@ -240,22 +241,20 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
 
         vm.selectFork(postDeployFork);
 
-        Beacon deployed = Beacon(BEACON);
-
-        assertEq(refIntegrations.length, deployed.integrations().length);
+        assertEq(refIntegrations.length, beacon.integrations().length);
 
         for (uint256 i; i < refIntegrations.length; ++i) {
             bytes32 refId = refIntegrations[i].id;
 
             IEnumerableIntegrations.Wire[] memory refWires    = refIntegrations[i].config.wires;
-            IEnumerableIntegrations.Config memory deployedCfg = deployed.getConfig(refId);
+            IEnumerableIntegrations.Config memory deployedCfg = beacon.getConfig(refId);
 
             assertEq(deployedCfg.facet != address(0), true,                      "missing integration on deployed beacon");
             assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
             assertEq(refWires.length,                 deployedCfg.wires.length,  "wire count mismatch");
 
             for (uint256 j; j < refWires.length; ++j) {
-                IEnumerableIntegrations.Dispatch memory deployedDispatch = deployed.getDispatch(refWires[j].callSelector);
+                IEnumerableIntegrations.Dispatch memory deployedDispatch = beacon.getDispatch(refWires[j].callSelector);
 
                 assertEq(deployedDispatch.delegateSelector, refWires[j].delegateSelector, "delegateSelector mismatch");
             }

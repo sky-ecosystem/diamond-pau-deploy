@@ -26,6 +26,31 @@ test-postdeploy-mainnet:
 	forge test --match-path "test/mainnet-fork/PostDeploy*" -vvv
 
 # --------------------------------------------------------------------------------------------------
+# Deploy: Beacon 		                                                                           #
+# --------------------------------------------------------------------------------------------------
+# Admin: Deployer as admin
+
+deploy-beacon-mainnet-production:
+	forge create lib/diamond-pau/src/Beacon.sol:Beacon --constructor-args $(ETH_FROM) \
+		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --broadcast --verify
+
+deploy-beacon-mainnet-local:
+	forge create lib/diamond-pau/src/Beacon.sol:Beacon --constructor-args $(ETH_FROM) \
+		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --verify
+
+# --------------------------------------------------------------------------------------------------
+# Deploy: PAU Factory 		                                                                       #
+# --------------------------------------------------------------------------------------------------
+
+deploy-pau-factory-mainnet-production:
+	forge create lib/diamond-pau/src/PAUFactory.sol:PAUFactory --constructor-args $(BEACON) \
+		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --broadcast --verify
+
+deploy-pau-factory-mainnet-local:
+	forge create lib/diamond-pau/src/PAUFactory.sol:PAUFactory --constructor-args $(BEACON) \
+		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --verify
+
+# --------------------------------------------------------------------------------------------------
 # Deploy: Facets + Wire                                                                            #
 # --------------------------------------------------------------------------------------------------
 # Deploys facets, wires them through Beacon, then transfers DEFAULT_ADMIN_ROLE to final admin and revokes deployer.
