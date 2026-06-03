@@ -265,6 +265,9 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
             console2.log("---");
             console2.logBytes32(deployedCfg.facet.codehash);
             console2.logBytes32(refFacetCodehashes[i]);
+            console2.log(deployedCfg.facet);
+            console2.log(refFacetCodehashes[i].facet);
+
 
             for (uint256 j; j < refWires.length; ++j) {
                 IEnumerableIntegrations.Dispatch memory deployedDispatch = beacon.getDispatch(refWires[j].callSelector);
