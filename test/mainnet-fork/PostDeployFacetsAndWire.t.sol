@@ -3,6 +3,8 @@ pragma solidity ^0.8.34;
 
 import { VmSafe } from "../../lib/forge-std/src/Vm.sol";
 
+import { console2 } from "../../lib/forge-std/src/console2.sol";
+
 import { IAccessControl } from "../../lib/diamond-pau/lib/openzeppelin-contracts/contracts/access/IAccessControl.sol";
 
 import { Ethereum }                  from "../../lib/diamond-pau/lib/spark-address-registry/src/Ethereum.sol";
@@ -248,6 +250,12 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
 
             IEnumerableIntegrations.Wire[] memory refWires    = refIntegrations[i].config.wires;
             IEnumerableIntegrations.Config memory deployedCfg = beacon.getConfig(refId);
+
+            console2.log("refId", refId);
+            console2.log("deployedCfg.facet", deployedCfg.facet);
+            console2.log("refFacetCodehashes[i]", refFacetCodehashes[i]);
+            console2.log("refWires.length", refWires.length);
+            console2.log("deployedCfg.wires.length", deployedCfg.wires.length);
 
             assertEq(deployedCfg.facet != address(0), true,                      "missing integration on deployed beacon");
             assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
