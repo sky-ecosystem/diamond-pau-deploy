@@ -3,8 +3,6 @@ pragma solidity ^0.8.34;
 
 import { VmSafe } from "../../lib/forge-std/src/Vm.sol";
 
-import { console2 } from "../../lib/forge-std/src/console2.sol";
-
 import { IAccessControl } from "../../lib/diamond-pau/lib/openzeppelin-contracts/contracts/access/IAccessControl.sol";
 
 import { Ethereum }                  from "../../lib/diamond-pau/lib/spark-address-registry/src/Ethereum.sol";
@@ -251,23 +249,9 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
             IEnumerableIntegrations.Wire[] memory refWires    = refIntegrations[i].config.wires;
             IEnumerableIntegrations.Config memory deployedCfg = beacon.getConfig(refId);
 
-            // console2.log("---");
-            // console2.log(i);
-            // console2.logBytes32(refId);
-            // console2.logBytes32(refFacetCodehashes[i]);
-            // console2.log("refWires.length", refWires.length);
-            // console2.log("deployedCfg.wires.length", deployedCfg.wires.length);
-
             assertEq(deployedCfg.facet != address(0), true,                      "missing integration on deployed beacon");
             assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
             assertEq(refWires.length,                 deployedCfg.wires.length,  "wire count mismatch");
-
-            console2.log("---");
-            console2.logBytes32(deployedCfg.facet.codehash);
-            console2.logBytes32(refFacetCodehashes[i]);
-            console2.log(deployedCfg.facet);
-            console2.log(refIntegrations[i].config.facet);
-
 
             for (uint256 j; j < refWires.length; ++j) {
                 IEnumerableIntegrations.Dispatch memory deployedDispatch = beacon.getDispatch(refWires[j].callSelector);
