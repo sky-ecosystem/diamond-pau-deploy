@@ -1,1 +1,0 @@
-lib/diamond-pau/:dss-test/=lib/diamond-pau/lib/dss-test/src/
