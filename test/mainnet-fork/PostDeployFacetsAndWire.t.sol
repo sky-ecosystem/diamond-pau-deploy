@@ -259,7 +259,7 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
             // console2.log("deployedCfg.wires.length", deployedCfg.wires.length);
 
             assertEq(deployedCfg.facet != address(0), true,                      "missing integration on deployed beacon");
-            // assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
+            assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
             assertEq(refWires.length,                 deployedCfg.wires.length,  "wire count mismatch");
 
             console2.log("---");
