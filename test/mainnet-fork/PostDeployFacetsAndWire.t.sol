@@ -39,36 +39,36 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
     address internal constant _UNISWAP_V4_POSITION_MANAGER = 0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e;
     address internal constant _UNISWAP_V4_ROUTER           = 0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af;
 
-    address internal constant BEACON = 0x9EA465978500399C6b4b9A356b14b00e6597e705;
+    address internal constant BEACON = 0x829dC2b7E94B1954F0764E573f2E0d45Afa28199;
 
     // Paste from script/output/1/wire-facets-mainnet-{env}-latest.json
     address internal constant DEPLOYER             = 0x1ca4ECaF0E13ca833c80dA835DEEa15e1684361d;
     address internal constant ADMIN                = 0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB;
-    address internal constant AAVE_FACET           = 0x61714DcB2A00a2A38E8244BeaeaDC041611aFcdF;
-    address internal constant BASIN_FACET          = 0x153A215BE3f11Cff096C5a1A58A6f6BD83E73FAC;
-    address internal constant CCTP_FACET           = 0x2cDF2BD533ba084007aCC66406B556286f8782dF;
-    address internal constant CENTRIFUGE_FACET     = 0x9092DDf907d18576F993ea464E1a5a0dc55140f7;
-    address internal constant CURVE_FACET          = 0x31213EaD1DcD25B1977C6B632024b2377Dad32bB;
-    address internal constant DAIUSDS_FACET        = 0xB1361F17c79FfDC42FD5fd45e0E2D37EbD80EB6f;
-    address internal constant ERC4626_FACET        = 0x71a1062177F16676F6c8cF7d07272Bb25686270A;
-    address internal constant ERC7540_FACET        = 0x65547FE981fb68773BFE861b23F6F6Da005874a0;
-    address internal constant ETHENA_FACET         = 0x43eDc8cBa1dBFa58D4c8A300e82B1BFF4A10efB0;
-    address internal constant FARM_FACET           = 0x07C22b9dd9F0E8eebfFC5107D3f0E2676Db0A013;
-    address internal constant LAYER_ZERO_FACET     = 0x949079D84C55eCe64F26Bca254977962Da877928;
-    address internal constant MAPLE_FACET          = 0xE10740731F7226A009D0Be6ED860FB31A9e1bb59;
-    address internal constant MERKL_FACET          = 0x14638015871067437061B1A393eCA15E5BE6C4fD;
-    address internal constant OTC_FACET            = 0x563ee89E22Cb8E1F0e364E0ae2973c09907eC11d;
-    address internal constant PENDLE_FACET         = 0x85F7D11bb9fea7142957191d4992c434cB0eD331;
-    address internal constant PSM_FACET            = 0x8dC7DfCdA40477Bc35aF019D5AB01478aEAc8f66;
-    address internal constant SPARK_VAULT_FACET    = 0xc365215f8905D20B44263e4C23a7833Ccb806226;
-    address internal constant SUPERSTATE_FACET     = 0xB614C6d9ACAE36f34C9f72DFD93D07C8026e2F33;
-    address internal constant TRANSFER_ASSET_FACET = 0xc0d7BDd0083bC455aA1dc1c0cF8d1823784AB71e;
-    address internal constant UNISWAP_V3_FACET     = 0x8B1655A554bfBEc6E8819c2320EbB2401F27a7be;
-    address internal constant UNISWAP_V4_FACET     = 0xadA8c8Ae2b67eDA93629C52861b1E5A63B2F074D;
-    address internal constant USDS_FACET           = 0xFfB81cF70ca108CbbE88FA9CAAeb7aeEE5612509;
-    address internal constant WEETH_FACET          = 0x6913876B5c9a00bA1c028eC477D07B304e8aa0c8;
-    address internal constant WRAP_PROXY_ETH_FACET = 0xdB160C7ad167F7408e8F55D73562D1E30a058154;
-    address internal constant WSTETH_FACET         = 0x2E1Fc6700783D0014d08DCd4A38A01D376318A4a;
+    address internal constant AAVE_FACET           = 0x8CE890A96a193ff2DD4B2eA3C682326F655f6b62;
+    address internal constant BASIN_FACET          = 0xC84825BCD13AEddc372400239499380376a44A39;
+    address internal constant CCTP_FACET           = 0xADf62692340e46EF90336f2e75ce3b37f1148873;
+    address internal constant CENTRIFUGE_FACET     = 0xa0A10BA97be1412730D694B8dE1afe7eff20eC31;
+    address internal constant CURVE_FACET          = 0x139D81d7d6040fAeF7cF0EF5A2636Ca8a97a30d8;
+    address internal constant DAIUSDS_FACET        = 0x3817F734CAe6AD2BDb79F9ff23091F2AD478da5F;
+    address internal constant ERC4626_FACET        = 0x1dCA18608c89174181153E786778705b4A0E1a06;
+    address internal constant ERC7540_FACET        = 0x4f7e0E3612b0e1E156A2B6570a51d4BD709F1315;
+    address internal constant ETHENA_FACET         = 0xEc48D773CEef1c6b07CdA1afA2716C478b55187B;
+    address internal constant FARM_FACET           = 0xF24E91f5D8529436c9fB92dd94F80d4A6C25d0f0;
+    address internal constant LAYER_ZERO_FACET     = 0xA0c323a0acb20F259eA4ff343319D450BE6472e5;
+    address internal constant MAPLE_FACET          = 0x691b5c26aD2B74d2376f4eD87904E9D3E47bD630;
+    address internal constant MERKL_FACET          = 0x321138Db5E056e9d0080D4c278e10A1EdC091Eb0;
+    address internal constant OTC_FACET            = 0x46b24ba00B65CB4f603447590e539b08097fb7Ac;
+    address internal constant PENDLE_FACET         = 0xcC9dD4c9B2a9c08f2692e7060F43d29A03E87348;
+    address internal constant PSM_FACET            = 0xE4A5dAc768a310cc2316f258901b32E499653064;
+    address internal constant SPARK_VAULT_FACET    = 0xff0d19920E207e3A17eb5A2E5bA3AFA44836362b;
+    address internal constant SUPERSTATE_FACET     = 0xeE197475607E9a27cCAA4786e740d2F0d0E706A7;
+    address internal constant TRANSFER_ASSET_FACET = 0x4DA7608C331b8f135df5b985018933780eCd089D;
+    address internal constant UNISWAP_V3_FACET     = 0x445D9Dc752F269Be48250f1A180CAC4c61cE4bab;
+    address internal constant UNISWAP_V4_FACET     = 0x75D35ffB8e6B871E12EB549CcF6afD324c46E47D;
+    address internal constant USDS_FACET           = 0x1221CC4B85Ab260660aD21C2829e0EB516dffBc7;
+    address internal constant WEETH_FACET          = 0x1d8D089EB7D558F5dc6aA0cf98DDe13B77b3F641;
+    address internal constant WRAP_PROXY_ETH_FACET = 0x081506DE21C695Af5e61a81aD288C8A96B6b59B9;
+    address internal constant WSTETH_FACET         = 0x3a82D11Cd37Fb0098363262Dc69425d07Fa05516;
 
     Beacon internal beacon;
 
@@ -79,7 +79,7 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
     }
 
     function _getBlock() internal pure returns (uint256) {
-        return 25143000; // May-21-2026 10:23:47 AM +UTC : After the BeaconAndFacets deployment block.
+        return 25235587; // Jun-03-2026 08:12:23 AM +UTC : After the BeaconAndFacets deployment block.
     }
 
     function test_postDeployState_beacon() external view {

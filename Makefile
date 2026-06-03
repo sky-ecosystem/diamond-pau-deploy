@@ -30,25 +30,29 @@ test-postdeploy-mainnet:
 # --------------------------------------------------------------------------------------------------
 # Admin: Deployer as admin
 
-deploy-beacon-mainnet-production:
-	forge create lib/diamond-pau/src/Beacon.sol:Beacon --constructor-args $(ETH_FROM) \
-		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --broadcast --verify
+deploy-beacon-mainnet:
+	forge create lib/diamond-pau/src/Beacon.sol:Beacon \
+		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --broadcast --verify \
+		--constructor-args $(ETH_FROM)
 
-deploy-beacon-mainnet-local:
-	forge create lib/diamond-pau/src/Beacon.sol:Beacon --constructor-args $(ETH_FROM) \
-		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --verify
+deploy-beacon-mainnet-dryrun:
+	forge create lib/diamond-pau/src/Beacon.sol:Beacon \
+		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer \
+		--constructor-args $(ETH_FROM)
 
 # --------------------------------------------------------------------------------------------------
 # Deploy: PAU Factory 		                                                                       #
 # --------------------------------------------------------------------------------------------------
 
-deploy-pau-factory-mainnet-production:
-	forge create lib/diamond-pau/src/PAUFactory.sol:PAUFactory --constructor-args $(BEACON) \
-		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --broadcast --verify
+deploy-pau-factory-mainnet:
+	forge create lib/diamond-pau/src/PAUFactory.sol:PAUFactory \
+		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --broadcast --verify \
+		--constructor-args $(BEACON)
 
-deploy-pau-factory-mainnet-local:
-	forge create lib/diamond-pau/src/PAUFactory.sol:PAUFactory --constructor-args $(BEACON) \
-		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer --verify
+deploy-pau-factory-mainnet-dryrun:
+	forge create lib/diamond-pau/src/PAUFactory.sol:PAUFactory \
+		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer \
+		--constructor-args $(BEACON)
 
 # --------------------------------------------------------------------------------------------------
 # Deploy: Facets + Wire                                                                            #
@@ -68,3 +72,11 @@ deploy-facets-and-wire-mainnet-production:
 deploy-facets-and-wire-mainnet-staging:
 	ENV=staging forge script script/mainnet/DeployFacetsAndWireMainnet.s.sol:DeployFacetsAndWireMainnet \
 		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(MAINNET_RPC_URL)
+
+deploy-facets-and-wire-mainnet-production-dryrun:
+	ENV=production forge script script/mainnet/DeployFacetsAndWireMainnet.s.sol:DeployFacetsAndWireMainnet \
+		--sender $(ETH_FROM) --account deployer --rpc-url $(MAINNET_RPC_URL)
+
+deploy-facets-and-wire-mainnet-staging-dryrun:
+	ENV=staging forge script script/mainnet/DeployFacetsAndWireMainnet.s.sol:DeployFacetsAndWireMainnet \
+		--sender $(ETH_FROM) --account deployer --rpc-url $(MAINNET_RPC_URL)
