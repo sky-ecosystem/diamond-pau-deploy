@@ -249,14 +249,16 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
             IEnumerableIntegrations.Wire[] memory refWires    = refIntegrations[i].config.wires;
             IEnumerableIntegrations.Config memory deployedCfg = beacon.getConfig(refId);
 
-            assertEq(deployedCfg.facet != address(0), true,                      "missing integration on deployed beacon");
-            assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
-            assertEq(refWires.length,                 deployedCfg.wires.length,  "wire count mismatch");
+            assertEq(deployedCfg.facet != address(0), true,                     "missing integration on deployed beacon");
+            assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],    "facet bytecode mismatch");
+            assertEq(refWires.length,                 deployedCfg.wires.length, "wire count mismatch");
 
             for (uint256 j; j < refWires.length; ++j) {
                 IEnumerableIntegrations.Dispatch memory deployedDispatch = beacon.getDispatch(refWires[j].callSelector);
 
-                assertEq(deployedDispatch.delegateSelector, refWires[j].delegateSelector, "delegateSelector mismatch");
+                assertEq(deployedDispatch.facet != address(0), true);
+                assertEq(deployedDispatch.facet.codehash,      refFacetCodehashes[i]);
+                assertEq(deployedDispatch.delegateSelector,    refWires[j].delegateSelector);
             }
         }
     }
