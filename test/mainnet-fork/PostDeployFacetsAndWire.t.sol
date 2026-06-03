@@ -266,7 +266,7 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
             console2.logBytes32(deployedCfg.facet.codehash);
             console2.logBytes32(refFacetCodehashes[i]);
             console2.log(deployedCfg.facet);
-            console2.log(refFacetCodehashes[i].facet);
+            console2.log(refIntegrations[i].config.facet);
 
 
             for (uint256 j; j < refWires.length; ++j) {
