@@ -251,11 +251,12 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
             IEnumerableIntegrations.Wire[] memory refWires    = refIntegrations[i].config.wires;
             IEnumerableIntegrations.Config memory deployedCfg = beacon.getConfig(refId);
 
-            console2.log("refId", refId);
-            console2.log("deployedCfg.facet", deployedCfg.facet);
-            console2.log("refFacetCodehashes[i]", refFacetCodehashes[i]);
-            console2.log("refWires.length", refWires.length);
-            console2.log("deployedCfg.wires.length", deployedCfg.wires.length);
+            console2.log("---");
+            console2.log(i);
+            console2.logBytes32(refId);
+            console2.logBytes32(refFacetCodehashes[i]);
+            console2.logUint("refWires.length", refWires.length);
+            console2.logUint("deployedCfg.wires.length", deployedCfg.wires.length);
 
             assertEq(deployedCfg.facet != address(0), true,                      "missing integration on deployed beacon");
             assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
