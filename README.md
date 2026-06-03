@@ -1,13 +1,8 @@
-# <TITLE>
+# Diamond PAU Deploy Scripts
 
-<!-- ![Foundry CI](https://github.com/{org}/{repo}/actions/workflows/ci.yml/badge.svg)
-[![Foundry][foundry-badge]][foundry]
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/{org}/{repo}/blob/master/LICENSE) -->
+[![Built with Foundry](https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg)](https://getfoundry.sh/)
 
-[foundry]: https://getfoundry.sh/
-[foundry-badge]: https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg
-
-Description of project goes here.
+Deployment scripts for the [diamond-pau](https://github.com/sky-ecosystem/diamond-pau-deploy). Deploys all integration facets, wires them through the `Beacon`, and transfers admin ownership in a single script.
 
 ## Usage
 
@@ -21,5 +16,8 @@ forge build
 forge test
 ```
 
-***
-*The IP in this repository was assigned to Mars SPC Limited in respect of the MarsOne SP*
+---
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c83ef7e4-fae1-4c5c-8cff-99494ef75962" height="100"/>
+</p>
