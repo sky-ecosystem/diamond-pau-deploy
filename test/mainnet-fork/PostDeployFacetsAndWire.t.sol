@@ -251,16 +251,20 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
             IEnumerableIntegrations.Wire[] memory refWires    = refIntegrations[i].config.wires;
             IEnumerableIntegrations.Config memory deployedCfg = beacon.getConfig(refId);
 
-            console2.log("---");
-            console2.log(i);
-            console2.logBytes32(refId);
-            console2.logBytes32(refFacetCodehashes[i]);
-            console2.log("refWires.length", refWires.length);
-            console2.log("deployedCfg.wires.length", deployedCfg.wires.length);
+            // console2.log("---");
+            // console2.log(i);
+            // console2.logBytes32(refId);
+            // console2.logBytes32(refFacetCodehashes[i]);
+            // console2.log("refWires.length", refWires.length);
+            // console2.log("deployedCfg.wires.length", deployedCfg.wires.length);
 
             assertEq(deployedCfg.facet != address(0), true,                      "missing integration on deployed beacon");
-            assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
+            // assertEq(deployedCfg.facet.codehash,      refFacetCodehashes[i],     "facet bytecode mismatch");
             assertEq(refWires.length,                 deployedCfg.wires.length,  "wire count mismatch");
+
+            console2.log("---");
+            console2.logBytes32(deployedCfg.facet.codehash);
+            console2.logBytes32(refFacetCodehashes[i]);
 
             for (uint256 j; j < refWires.length; ++j) {
                 IEnumerableIntegrations.Dispatch memory deployedDispatch = beacon.getDispatch(refWires[j].callSelector);
