@@ -23,11 +23,11 @@ contract DeployFacetsAndWireMainnet is DeployFacetsAndWire {
         super.run();
     }
 
-    function _configFacetFileSlug() internal override returns (string memory) {
+    function _configFacetFileSlug() internal view override returns (string memory) {
         return string(abi.encodePacked("wire-facets-mainnet-", vm.envString("ENV")));
     }
     
-    function _logPrefix() internal override returns (string memory) {
+    function _logPrefix() internal pure override returns (string memory) {
         return "Wiring PAU facets...\n  Chain: Mainnet";
     }
 

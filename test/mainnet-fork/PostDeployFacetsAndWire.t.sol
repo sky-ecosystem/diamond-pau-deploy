@@ -79,7 +79,7 @@ contract PostDeployFacetsAndWireTests is PostDeployFacetsAndWireBase {
     }
 
     function _getBlock() internal pure returns (uint256) {
-        return 25235587; // Jun-03-2026 08:12:23 AM +UTC : After the BeaconAndFacets deployment block.
+        return 25235587; // Jun-03-2026 08:12:23 AM +UTC
     }
 
     function test_postDeployState_beacon() external view {

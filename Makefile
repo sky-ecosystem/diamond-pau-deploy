@@ -25,6 +25,9 @@ clean:
 test-postdeploy-mainnet:
 	forge test --match-path "test/mainnet-fork/PostDeploy*" -vvv
 
+test-postdeploy-base:
+	forge test --match-path "test/base-fork/PostDeploy*" -vvv
+
 # --------------------------------------------------------------------------------------------------
 # Deploy: Beacon 		                                                                           #
 # --------------------------------------------------------------------------------------------------
@@ -40,6 +43,16 @@ deploy-beacon-mainnet-dryrun:
 		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer \
 		--constructor-args $(ETH_FROM)
 
+deploy-beacon-base:
+	forge create lib/diamond-pau/src/Beacon.sol:Beacon \
+		--rpc-url $(BASE_RPC_URL) --from $(ETH_FROM) --account deployer --broadcast --verify \
+		--constructor-args $(ETH_FROM)
+
+deploy-beacon-base-dryrun:
+	forge create lib/diamond-pau/src/Beacon.sol:Beacon \
+		--rpc-url $(BASE_RPC_URL) --from $(ETH_FROM) --account deployer \
+		--constructor-args $(ETH_FROM)
+
 # --------------------------------------------------------------------------------------------------
 # Deploy: PAU Factory 		                                                                       #
 # --------------------------------------------------------------------------------------------------
@@ -52,6 +65,16 @@ deploy-pau-factory-mainnet:
 deploy-pau-factory-mainnet-dryrun:
 	forge create lib/diamond-pau/src/PAUFactory.sol:PAUFactory \
 		--rpc-url $(MAINNET_RPC_URL) --from $(ETH_FROM) --account deployer \
+		--constructor-args $(BEACON)
+
+deploy-pau-factory-base:
+	forge create lib/diamond-pau/src/PAUFactory.sol:PAUFactory \
+		--rpc-url $(BASE_RPC_URL) --from $(ETH_FROM) --account deployer --broadcast --verify \
+		--constructor-args $(BEACON)
+
+deploy-pau-factory-base-dryrun:
+	forge create lib/diamond-pau/src/PAUFactory.sol:PAUFactory \
+		--rpc-url $(BASE_RPC_URL) --from $(ETH_FROM) --account deployer \
 		--constructor-args $(BEACON)
 
 # --------------------------------------------------------------------------------------------------
@@ -80,3 +103,21 @@ deploy-facets-and-wire-mainnet-production-dryrun:
 deploy-facets-and-wire-mainnet-staging-dryrun:
 	ENV=staging forge script script/mainnet/DeployFacetsAndWireMainnet.s.sol:DeployFacetsAndWireMainnet \
 		--sender $(ETH_FROM) --account deployer --rpc-url $(MAINNET_RPC_URL)
+
+# Base
+
+deploy-facets-and-wire-base-chain-production:
+	ENV=production forge script script/base/DeployFacetsAndWireBaseChain.s.sol:DeployFacetsAndWireBaseChain \
+		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
+
+deploy-facets-and-wire-base-chain-staging:
+	ENV=staging forge script script/base/DeployFacetsAndWireBaseChain.s.sol:DeployFacetsAndWireBaseChain \
+		--sender $(ETH_FROM) --account deployer --broadcast --verify --rpc-url $(BASE_RPC_URL)
+
+deploy-facets-and-wire-base-chain-production-dryrun:
+	ENV=production forge script script/base/DeployFacetsAndWireBaseChain.s.sol:DeployFacetsAndWireBaseChain \
+		--sender $(ETH_FROM) --account deployer --rpc-url $(BASE_RPC_URL)
+
+deploy-facets-and-wire-base-chain-staging-dryrun:
+	ENV=staging forge script script/base/DeployFacetsAndWireBaseChain.s.sol:DeployFacetsAndWireBaseChain \
+		--sender $(ETH_FROM) --account deployer --rpc-url $(BASE_RPC_URL)
